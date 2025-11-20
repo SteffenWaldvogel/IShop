@@ -10,8 +10,15 @@
     <p>Hier sehen Sie Ihre Bestellung und geben Ihre Adresse ein.</p>
     <section>
         <h2>Bestellübersicht</h2>
-        <div id="order-summary">
-            <!-- Dynamisch generierte Bestellübersicht -->
+        <div>
+            Artikel im Warenkorb:
+            <ul id="checkout-cart-items">
+                <!-- Cart items will be dynamically added here -->
+            </ul>
+            <span id="checkout-cart-total">0.00</span>€
+            <span id="checkout-shipping-cost">0.00</span>€ Versandkosten
+            <br>
+            <span id="checkout-grand-total">0.00</span>€
         </div>
     </section>
     <section>
@@ -40,11 +47,12 @@
             <p>Zahlungsmethoden:</p>
             <input type="radio" id="payment-paypal" name="paymentMethod" value="paypal" required>
             <label for="payment-paypal">PayPal</label><br>
-            <input type="radio" id="payment-prepaid-banktransfer" name="paymentMethod" value="payment-prepaid-banktransfer">
+            <input type="radio" id="payment-banktransfer" name="paymentMethod" value="payment-prepaid-banktransfer">
             <label for="payment-banktransfer">Vorauskasse</label><br><br>
 
             <button type="submit">kostenpflichtig bestellen</button>
         </form>
     </section>
+    <script src="checkout.js"></script>
 </body>
 </html>

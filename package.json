@@ -1,0 +1,26 @@
+{
+  "name": "ishop",
+  "version": "1.0.0",
+  "description": "- Built with: HTML, CSS, JS\r - Services: \r     - Shopfront to browse products, add them to cart\r     - Shopping Cart: Manage Shopping cart (edit, delete products from cart), enter address, choose shipping, go to checkout (Paypal, Prepaid)\r     - Communication: REST API Endpoints\r - Optional: Design with Figma",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SteffenWaldvogel/IShop.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SteffenWaldvogel/IShop/issues"
+  },
+  "homepage": "https://github.com/SteffenWaldvogel/IShop#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "pg": "^8.16.3"
+  }
+}

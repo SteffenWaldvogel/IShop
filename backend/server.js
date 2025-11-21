@@ -1,4 +1,5 @@
 const express = require('express');
+const { Pool } = require('pg');
 const app = express();
 
 app.use((req, res, next) => {
@@ -7,20 +8,37 @@ app.use((req, res, next) => {
 });
 
 const port = 3000;
-const products = [{ id: 1, name: 'Product 1', description: 'Description of Product 1', price: 129.99 },
-  { id: 2, name: 'Product 2', description: 'Description of Product 2', price: 129.99 },
-  { id: 3, name: 'Product 3', description: 'Description of Product 3', price: 129.99 }]
 
-
-app.get('/', (req, res) => {
-    res.send('Backend läuft')
+const pool = new Pool({
+  host: 'localhost',
+  port: 5432,
+  user: 'postgres',
+  password: '9029',
+  database: 'ishop'
 });
 
-app.get('/api/products', (req, res) => {
-    res.json(products)
+app.get('/', (req, res) => {
+  res.send('Backend läuft mit Postgres');
+});
+
+app.get('/api/products', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        product_id AS id,
+        productname AS name,
+        description,
+        price
+      FROM products
+      ORDER BY product_id ASC
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fehler bei /api/products:', err);
+    res.status(500).json({ error: 'Interner Serverfehler' });
+  }
 });
 
 app.listen(port, () => {
-    console.log('Server bereit auf Port 3000')
+  console.log('Server bereit auf Port ' + port);
 });
-

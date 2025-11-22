@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
 </head>
+
 <body>
     <h1>Checkout</h1>
     <p>Hier sehen Sie Ihre Bestellung und geben Ihre Adresse ein.</p>
@@ -24,16 +26,82 @@
     <section>
         <h2>Lieferadresse</h2>
         <form>
-            <label for="first-name">Vorname:</label><input type="text" id="first-name" name="first-name" required><br>
-            <label for="last-name">Nachname:</label><input type="text" id="last-name" name="last-name" required><br>
-            <label for="street">Straße:</label><input type="text" id="street" name="street" required><br>
-            <label for="house-number">Hausnummer:</label><input type="text" id="house-number" name="house-number" required><br>
-            <label for="address-line2">Adresszusatz:</label><input type="text" id="address-line2" name="address-line2"><br>
-            <label for="city">Stadt:</label><input type="text" id="city" name="city" required><br>
-            <label for="zip">Postleitzahl:</label><input type="text" id="zip" name="zip" required><br>
-            <label for="country">Land:</label><input type="text" id="country" name="country" required><br>
-            
-            <p>Versandoptionen:</p>
+
+            <label for="email">E-Mail:</label>
+            <input type="email" id="email" name="email" required
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"><br>
+
+            <label for="phone-local">Telefonnummer:</label>
+            <span>+49</span>
+            <input type="tel" id="phone-local" name="phone-local" required pattern="[0-9\s\-]{6,15}"
+                placeholder="1512345678" />
+            <br>
+
+            <label for="first-name">Vorname:</label>
+            <input type="text" id="first-name" name="first-name" required minlength="2"
+                pattern="[A-Za-zÄÖÜäöüß\s\-]{2,}"><br>
+
+            <label for="last-name">Nachname:</label>
+            <input type="text" id="last-name" name="last-name" required minlength="2"
+                pattern="[A-Za-zÄÖÜäöüß\s\-]{2,}"><br>
+
+            <label for="street">Straße:</label>
+            <input type="text" id="street" name="street" required minlength="2"><br>
+
+            <label for="house-number">Hausnummer:</label>
+            <input type="text" id="house-number" name="house-number" required pattern="[0-9]{1,4}[A-Za-z]?"><br>
+
+            <label for="address-line2">Adresszusatz:</label><input type="text" id="address-line2"
+                name="address-line2"><br>
+
+            <label for="city">Stadt:</label>
+            <input type="text" id="city" name="city" required minlength="2" pattern="[A-Za-zÄÖÜäöüß\s\-]{2,}"><br>
+
+            <label for="zip">Postleitzahl:</label>
+            <input type="text" id="zip" name="zip" required pattern="[0-9]{5}" minlength="5" maxlength="5"
+                inputmode="numeric"><br>
+
+            <label for="country">Land:</label>
+            <input type="text" id="country" name="country" required minlength="3"><br>
+
+            <p>
+                <input type="checkbox" id="billing-same" checked>
+                <label for="billing-same">Rechnungsadresse entspricht der Lieferadresse</label>
+            </p>
+
+            <div id="billing-address-section"
+                style="display: none; margin-top: 10px; border-top: 1px solid #ccc; padding-top: 10px;">
+
+                <h3>Rechnungsadresse</h3>
+
+                <label for="billing-first-name">Vorname:</label>
+                <input type="text" id="billing-first-name" name="billing-first-name"><br>
+
+                <label for="billing-last-name">Nachname:</label>
+                <input type="text" id="billing-last-name" name="billing-last-name"><br>
+
+                <label for="billing-street">Straße:</label>
+                <input type="text" id="billing-street" name="billing-street"><br>
+
+                <label for="billing-house-number">Hausnummer:</label>
+                <input type="text" id="billing-house-number" name="billing-house-number"><br>
+
+                <label for="billing-address-line2">Adresszusatz:</label>
+                <input type="text" id="billing-address-line2" name="billing-address-line2"><br>
+
+                <label for="billing-city">Stadt:</label>
+                <input type="text" id="billing-city" name="billing-city"><br>
+
+                <label for="billing-zip">Postleitzahl:</label>
+                <input type="text" id="billing-zip" name="billing-zip"><br>
+
+                <label for="billing-country">Land:</label>
+                <input type="text" id="billing-country" name="billing-country"><br>
+            </div>
+
+            <p>
+            <h3>Versandoptionen:</h3>
+            </p>
 
             <input type="radio" id="shipping-standard" name="shippingOption" value="standard" required>
             <label for="shipping-standard">Standardversand (3-5 Tage) - 5.00€</label><br>
@@ -55,4 +123,5 @@
     </section>
     <script src="checkout.js"></script>
 </body>
+
 </html>

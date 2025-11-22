@@ -1,6 +1,13 @@
 function loadProductsFromApi() {
   fetch ('http://localhost:3000/api/products').then(response => response.json()).then(data => {console.log(data);
-    products = data;
+    products = data.map(product => ({
+      product_id: product.product_id,
+      productname: product.productname,
+      description: product.description,
+      price: parseFloat(product.price),
+      quanity: product.quantity 
+    }));
+    console.log('Products loaded:', products);
     renderProducts();
   });
 }
@@ -24,23 +31,23 @@ function addToCart(product) {
   cartTotal += product.price;
   cartTotalElement.textContent = cartTotal.toFixed(2);
 
-  const existingItem = cartItems.find(item => item.id === product.id);
+  const existingItem = cartItems.find(item => item.product_id === product.product_id);
 
   if (existingItem) {
     existingItem.quantity++;
     console.log(
-      `Increased quantity: ${existingItem.name} Menge: ${existingItem.quantity} - €${existingItem.price}`
+      `Increased quantity: ${existingItem.productname} Menge: ${existingItem.quantity} - €${existingItem.price}`
     );
   } else {
     const newItem = {
-      id: product.id,
-      name: product.name,
+      product_id: product.product_id,
+      productname: product.productname,
       price: product.price,
       quantity: 1
     };
     cartItems.push(newItem);
     console.log(
-      `Added to cart: ${newItem.name} (x${newItem.quantity}) - €${newItem.price}`
+      `Added to cart: ${newItem.productname} (x${newItem.quantity}) - €${newItem.price}`
     );
   }
 
@@ -57,7 +64,7 @@ function renderCartItems() {
     const li = document.createElement('li');
 
     const lineTotal = item.quantity * item.price;
-    li.textContent = `${item.name} (Menge: ${item.quantity}) - €${lineTotal.toFixed(2)} `;
+    li.textContent = `${item.productname} (Menge: ${item.quantity}) - €${lineTotal.toFixed(2)} `;
 
     const plusButton = document.createElement('button');
     plusButton.textContent = '+';
@@ -147,11 +154,11 @@ function renderProducts() {
 
   products.forEach(product => {
     const article = document.createElement('article');
-    article.dataset.productName = product.name;
+    article.dataset.productName = product.productname;
     article.dataset.productPrice = product.price;
 
     const title = document.createElement('h3');
-    title.textContent = product.name;
+    title.textContent = product.productname;
 
     const desc = document.createElement('p');
     desc.textContent = product.description;

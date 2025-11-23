@@ -1,3 +1,15 @@
+function getSessionId() {
+  let sessionId = localStorage.getItem('sessionId');
+  if (!sessionId) {
+    sessionId = 'ishop_' + Math.random().toString(36).substr(2) + Date.now().toString(36);
+    localStorage.setItem('sessionId', sessionId);
+  }
+  return sessionId;
+}
+
+const sessionId = getSessionId();
+console.log('Session ID (Checkout):', sessionId);
+
 let cartSubtotal = 0; // Zwischensumme
 
 function loadCartForCheckout() {

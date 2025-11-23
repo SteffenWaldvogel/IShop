@@ -1,5 +1,6 @@
 const express = require('express');
 const { Pool } = require('pg');
+const redis = require('redis');
 const app = express();
 
 app.use((req, res, next) => {
@@ -19,6 +20,16 @@ const pool = new Pool({
   user: 'postgres',
   password: '9029',
   database: 'ishop'
+});
+
+const redisClient = redis.createClient({
+  url: 'redis://localhost:6379'
+});
+redisClient.on('error', (err) => console.log('Redis Client Fehler', err));
+redisClient.connect().then(() => {
+  console.log('Mit Redis-Server verbunden');
+}).catch((err) => {
+  console.error('Fehler bei der Verbindung zu Redis:', err);
 });
 
 app.get('/', (req, res) => {
@@ -41,6 +52,81 @@ app.get('/api/products', async (req, res) => {
   } catch (err) {
     console.error('Fehler bei /api/products:', err);
     res.status(500).json({ error: 'Interner Serverfehler' });
+  }
+});
+
+app.get('/api/redis-test', async (req, res) => {
+  try {
+    await redisClient.set('ishop:test', 'Hello World', { EX: 60 });
+
+    const value = await redisClient.get('ishop:test');
+
+    res.json({
+      message: 'Redis test',
+      key: 'ishop:test',
+      value: value
+    });
+  } catch (err) {
+    console.error('Fehler bei /api/redis-test:', err);
+    res.status(500).json({ error: 'Redis-Test fehlgeschlagen' });
+  }
+});
+
+app.get('/api/cart/:sessionId', async (req, res) => {
+  try {
+    const sessionId = req.params.sessionId;
+    const cartKey = `cart:${sessionId}`;
+
+    const cartData = await redisClient.hGetAll(cartKey);
+
+    if (!cartData || Object.keys(cartData).length === 0) {
+      return res.json({ items: [] });
+    }
+
+    const items = Object.entries(cartData).map(([productId, quantity]) => ({
+      product_id: parseInt(productId, 10),
+      quantity: parseInt(quantity, 10)
+    }));
+
+    res.json({ items });
+  } catch (err) {
+    console.error('Fehler bei Redis Cart Get Funktion', err);
+    res.status(500).json({ error: 'Fehler beim Abrufen des Warenkorbs' });
+  }
+});
+
+app.post('/api/cart/:sessionId', async (req, res) => {
+  try {
+    const sessionId = req.params.sessionId;
+    const cartKey = `cart:${sessionId}`;
+    const { items } = req.body;
+
+    if (!items || !Array.isArray(items)) {
+      return res.status(400).json({ error: 'Keine Artikel im Warenkorb / Falsches Format' });
+    }
+
+    const hashData = {};
+    const timeToLiveCart = 3600;
+
+    for (const item of items) {
+      if (!item.product_id || !item.quantity) {
+        continue;
+      }
+      hashData[item.product_id] = String(item.quantity);
+    }
+
+    if (Object.keys(hashData).length === 0) {
+      await redisClient.del(cartKey);
+      return res.json({ message: 'Warenkorb geleert' });
+    }
+
+    await redisClient.del(cartKey);
+    await redisClient.hSet(cartKey, hashData);
+    await redisClient.expire(cartKey, timeToLiveCart); 
+    res.json({ message: 'Warenkorb gespeichert' });
+  } catch (err) {
+    console.error('Fehler bei Redis Post Cart Funktion', err);
+    res.status(500).json({ error: 'Fehler beim Speichern des Warenkorbs' });
   }
 });
 
@@ -200,7 +286,7 @@ app.post('/api/checkout', async (req, res) => {
     );
     const orderId = orderResult.rows[0].order_id;
 
-    
+
     for (const item of items) {
       await client.query(
         `
@@ -210,7 +296,7 @@ app.post('/api/checkout', async (req, res) => {
         [orderId, item.product_id, item.quantity]
       );
     }
-    
+
 
     await client.query('COMMIT');
 

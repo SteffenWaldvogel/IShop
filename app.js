@@ -1,3 +1,15 @@
+function getSessionId() {
+  let sessionId = localStorage.getItem('sessionId');
+  if (!sessionId) {
+    sessionId = 'ishop_' + Math.random().toString(36).substr(2) + Date.now().toString(36);
+    localStorage.setItem('sessionId', sessionId);
+  }
+  return sessionId;
+}
+
+const sessionId = getSessionId();
+console.log('Session ID:', sessionId);
+
 function loadProductsFromApi() {
   fetch ('http://localhost:3000/api/products').then(response => response.json()).then(data => {console.log(data);
     products = data.map(product => ({
@@ -93,7 +105,7 @@ function renderCartItems() {
         cartTotal -= item.price;
 
         if (item.quantity === 0) {
-          cartItems = cartItems.filter(ci => ci.id !== item.id);
+          cartItems = cartItems.filter(ci => ci.product_id !== item.product_id);
         }
 
         cartCountElement.innerText = cartCount;
@@ -110,7 +122,7 @@ function renderCartItems() {
     removeButton.addEventListener('click', () => {
       cartCount -= item.quantity;
       cartTotal -= item.price * item.quantity;
-      cartItems = cartItems.filter(ci => ci.id !== item.id);
+      cartItems = cartItems.filter(ci => ci.product_id !== item.product_id);
 
       cartCountElement.innerText = cartCount;
       cartTotalElement.textContent = cartTotal.toFixed(2);
@@ -125,6 +137,7 @@ function renderCartItems() {
     cartItemsElement.appendChild(li);
   });
   saveCartToLocalStorage();
+  saveCartToRedis();
 }
 
 function saveCartToLocalStorage() {
@@ -134,6 +147,28 @@ function saveCartToLocalStorage() {
     count: cartCount
   };
   localStorage.setItem('shoppingCart', JSON.stringify(cartData));
+}
+
+function saveCartToRedis() {
+  const itemsForRedis = cartItems.map(item => ({
+    product_id: item.product_id,
+    quantity: item.quantity
+  }));
+
+  fetch(`http://localhost:3000/api/cart/${sessionId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ items: itemsForRedis })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Warenkorb in Redis gespeichert:', data);
+  })
+  .catch(error => {
+    console.error('Fehler beim Speichern des Warenkorbs in Redis:', error);
+  });
 }
 
 function loadCartFromLocalStorage() {

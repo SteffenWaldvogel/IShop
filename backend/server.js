@@ -122,7 +122,7 @@ app.post('/api/cart/:sessionId', async (req, res) => {
 
     await redisClient.del(cartKey);
     await redisClient.hSet(cartKey, hashData);
-    await redisClient.expire(cartKey, timeToLiveCart); 
+    await redisClient.expire(cartKey, timeToLiveCart);
     res.json({ message: 'Warenkorb gespeichert' });
   } catch (err) {
     console.error('Fehler bei Redis Post Cart Funktion', err);
@@ -137,8 +137,8 @@ app.post('/api/checkout', async (req, res) => {
     console.log('Checkout-Payload empfangen:', req.body);
 
     const {
+      sessionId,
       customer,
-      items,
       totals,
       shippingOption,
       paymentMethod,
@@ -147,12 +147,28 @@ app.post('/api/checkout', async (req, res) => {
       billingSame
     } = req.body;
 
-    const email = customer && customer.email ? customer.email : null;
-    const phone = customer && customer.phone ? customer.phone : null;
+    if (!sessionId) {
+      return res.status(400).json({ error: 'Session ID fehlt' });
+    }
 
-    if (!items || !Array.isArray(items) || items.length === 0) {
+    const cartKey = `cart:${sessionId}`;
+    const cartData = await redisClient.hGetAll(cartKey);
+
+    if (!cartData || Object.keys(cartData).length === 0) {
       return res.status(400).json({ error: 'Warenkorb ist leer' });
     }
+
+    const items = Object.entries(cartData).map(([productId, quantity]) => ({
+      product_id: parseInt(productId, 10),
+      quantity: parseInt(quantity, 10)
+    }));
+
+    if (!items || items.length === 0) {
+      return res.status(400).json({ error: 'Warenkorb ist leer' });
+    }
+
+    const email = customer && customer.email ? customer.email : null;
+    const phone = customer && customer.phone ? customer.phone : null;
 
     await client.query('BEGIN');
 
@@ -254,10 +270,7 @@ app.post('/api/checkout', async (req, res) => {
         paymentMethodId = 1;
     }
 
-    const totalsum =
-      totals && typeof totals.grandTotal === 'number'
-        ? totals.grandTotal
-        : 0;
+    const totalsum = totals && typeof totals.grandTotal === 'number' ? totals.grandTotal : 0;
 
     const orderResult = await client.query(
       `
@@ -286,7 +299,6 @@ app.post('/api/checkout', async (req, res) => {
     );
     const orderId = orderResult.rows[0].order_id;
 
-
     for (const item of items) {
       await client.query(
         `
@@ -297,8 +309,13 @@ app.post('/api/checkout', async (req, res) => {
       );
     }
 
-
     await client.query('COMMIT');
+
+    if (sessionId) {
+      const cartKeyToDelete = `cart:${sessionId}`;
+      await redisClient.del(cartKeyToDelete);
+      console.log(`Warenkorb für Session ${sessionId} gelöscht nach Checkout`);
+    }
 
     console.log('Checkout erfolgreich, Order-ID:', orderId);
     res.status(201).json({ orderId });
@@ -310,6 +327,7 @@ app.post('/api/checkout', async (req, res) => {
     client.release();
   }
 });
+
 
 app.listen(port, () => {
   console.log('Server bereit auf Port ' + port);

@@ -12,40 +12,52 @@ console.log('Session ID (Checkout):', sessionId);
 
 let cartSubtotal = 0; // Zwischensumme
 
-function loadCartForCheckout() {
+async function loadCartForCheckout() {
     const cartItemsContainer = document.getElementById('checkout-cart-items');
     const cartTotalElement = document.getElementById('checkout-cart-total');
     const shippingCostElement = document.getElementById('checkout-shipping-cost');
     const grandTotalElement = document.getElementById('checkout-grand-total');
 
-    const cartDataString = localStorage.getItem('shoppingCart');
-    let cartData = null;
+    const cartResponse = await fetch(`http://localhost:3000/api/cart/${sessionId}`);
+    const cartData = await cartResponse.json();
 
-    if (cartDataString) {
-        cartData = JSON.parse(cartDataString);
-    }
+    const productsResponse = await fetch('http://localhost:3000/api/products');
+    const products = await productsResponse.json();
 
-    if (cartData && cartData.items && cartData.items.length > 0) {
+    const productMap = {};
+    products.forEach(product => {
+        productMap[product.product_id] = product;
+    });
+
+    if (!cartData.items || cartData.items.length === 0) {
+        cartItemsContainer.innerHTML = '<p>Dein Warenkorb ist leer, schäm dich.</p>';
+        cartSubtotal = 0;
+        cartTotalElement.textContent = '0.00';
+    } else {
         cartItemsContainer.innerHTML = '';
+        cartSubtotal = 0;
         cartData.items.forEach(item => {
+            const product = productMap[item.product_id];
+            if (!product) {
+                return;
+            }
+            const price = parseFloat(product.price);
+            const lineTotal = price * item.quantity;
+            cartSubtotal += lineTotal;
+
             const itemElement = document.createElement('div');
             itemElement.className = 'checkout-cart-item';
             itemElement.innerHTML = `
-                <span class="item-name">${item.productname}</span>
-                <span class="item-quantity">x${item.quantity}</span>
-                <span class="item-price">€${(item.price * item.quantity).toFixed(2)}</span>
+                <span class="item-name">${product.productname}</span>
+                <span class="item-quantity">Menge: ${item.quantity}</span>
+                <span class="item-price">€${lineTotal.toFixed(2)}</span>
             `;
             cartItemsContainer.appendChild(itemElement);
         });
 
-        cartSubtotal = cartData.total || 0;
         cartTotalElement.textContent = cartSubtotal.toFixed(2);
-    } else {
-        cartItemsContainer.innerHTML = '<p>Dein Warenkorb ist leer, schäm dich.</p>';
-        cartSubtotal = 0;
-        cartTotalElement.textContent = '0.00';
     }
-
+    
     shippingCostElement.textContent = '0.00';
     grandTotalElement.textContent = cartSubtotal.toFixed(2);
 }
@@ -244,15 +256,12 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         }
 
-        const cartDataString = localStorage.getItem('shoppingCart');
-        const cartData = cartDataString ? JSON.parse(cartDataString) : null;
-
         const orderData = {
+            sessionId,
             customer: {
                 email,
                 phone
             },
-            items: cartData ? cartData.items : [],
             totals: {
                 subtotal: cartSubtotal,
                 shipping: shippingCost,

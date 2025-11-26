@@ -1,16 +1,27 @@
 function getSessionId() {
-  let sessionId = localStorage.getItem('sessionId');
-  if (!sessionId) {
-    sessionId = 'ishop_' + Math.random().toString(36).substr(2) + Date.now().toString(36);
-    localStorage.setItem('sessionId', sessionId);
+  const cookieName = 'sessionId=';
+  const cookies = document.cookie.split(';').map(c => c.trim());
+  const existing = cookies.find(c => c.startsWith(cookieName));
+
+  if (existing) {
+    return existing.substring(cookieName.length);
   }
-  return sessionId;
+
+  const newSessionId =
+    'ishop_' + Math.random().toString(36).substr(2) + Date.now().toString(36);
+
+  const maxAgeSeconds = 3600;
+  document.cookie = `${cookieName}${newSessionId}; path=/; max-age=${maxAgeSeconds}`;
+
+  return newSessionId;
 }
 
 const sessionId = getSessionId();
 console.log('Session ID (Checkout):', sessionId);
 
 let cartSubtotal = 0; // Zwischensumme
+let checkoutItems = []; 
+let productMap = {};
 
 async function loadCartForCheckout() {
     const cartItemsContainer = document.getElementById('checkout-cart-items');
@@ -24,7 +35,7 @@ async function loadCartForCheckout() {
     const productsResponse = await fetch('http://localhost:3000/api/products');
     const products = await productsResponse.json();
 
-    const productMap = {};
+    productMap = {};
     products.forEach(product => {
         productMap[product.product_id] = product;
     });
@@ -34,33 +45,117 @@ async function loadCartForCheckout() {
         cartSubtotal = 0;
         cartTotalElement.textContent = '0.00';
     } else {
-        cartItemsContainer.innerHTML = '';
+        checkoutItems = [];
         cartSubtotal = 0;
+
         cartData.items.forEach(item => {
             const product = productMap[item.product_id];
             if (!product) {
                 return;
             }
             const price = parseFloat(product.price);
-            const lineTotal = price * item.quantity;
-            cartSubtotal += lineTotal;
-
-            const itemElement = document.createElement('div');
-            itemElement.className = 'checkout-cart-item';
-            itemElement.innerHTML = `
-                <span class="item-name">${product.productname}</span>
-                <span class="item-quantity">Menge: ${item.quantity}</span>
-                <span class="item-price">€${lineTotal.toFixed(2)}</span>
-            `;
-            cartItemsContainer.appendChild(itemElement);
+            checkoutItems.push({
+                product_id: product.product_id,
+                quantity: item.quantity,
+                price: price,
+            });
         });
-
-        cartTotalElement.textContent = cartSubtotal.toFixed(2);
+        renderCheckoutItems();
     }
     
     shippingCostElement.textContent = '0.00';
     grandTotalElement.textContent = cartSubtotal.toFixed(2);
 }
+
+function renderCheckoutItems() {
+    const cartItemsContainer = document.getElementById('checkout-cart-items');
+    const cartTotalElement = document.getElementById('checkout-cart-total');
+    const shippingCostElement = document.getElementById('checkout-shipping-cost');
+    const grandTotalElement = document.getElementById('checkout-grand-total');
+
+    cartItemsContainer.innerHTML = '';
+    cartSubtotal = 0;
+
+    checkoutItems.forEach(item => {
+        const product = productMap[item.product_id];
+        if (!product) return;
+
+        const lineTotal = item.quantity * item.price;
+        cartSubtotal += lineTotal;
+
+        const itemElement = document.createElement('div');
+        itemElement.className = 'checkout-cart-item';
+        itemElement.innerHTML = `
+            <span class="item-name">${product.productname}</span>
+            <div class="item-controls">
+                <button class="qty-minus">-</button>
+                <span class="item-quantity">Menge: ${item.quantity}</span>
+                <button class="qty-plus">+</button>
+                <span class="item-price">€${lineTotal.toFixed(2)}</span>
+                <button class="item-remove">🗑️</button>
+            </div>
+        `;
+
+        const minusBtn = itemElement.querySelector('.qty-minus');
+        const plusBtn = itemElement.querySelector('.qty-plus');
+        const removeBtn = itemElement.querySelector('.item-remove');
+
+        plusBtn.addEventListener('click', () => {
+            item.quantity += 1;
+            renderCheckoutItems();
+            saveCheckoutCart();
+        });
+
+        minusBtn.addEventListener('click', () => {
+            if (item.quantity > 1) {
+                item.quantity -= 1;
+            } else {
+                checkoutItems = checkoutItems.filter(ci => ci.product_id !== item.product_id);
+            }
+            renderCheckoutItems();
+            saveCheckoutCart();
+        });
+
+        removeBtn.addEventListener('click', () => {
+            checkoutItems = checkoutItems.filter(ci => ci.product_id !== item.product_id);
+            renderCheckoutItems();
+            saveCheckoutCart();
+        });
+
+        cartItemsContainer.appendChild(itemElement);
+    });
+
+    cartTotalElement.textContent = cartSubtotal.toFixed(2);
+
+    const shippingCost = getSelectedShippingCost();   
+    const grandTotal = cartSubtotal + shippingCost;
+
+    shippingCostElement.textContent = shippingCost.toFixed(2);
+    grandTotalElement.textContent = grandTotal.toFixed(2);
+}
+
+function saveCheckoutCart() {
+    const itemsForRedis = checkoutItems.map(item => ({
+        product_id: item.product_id,
+        quantity: item.quantity
+    }));
+
+    fetch(`http://localhost:3000/api/cart/${sessionId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ items: itemsForRedis })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Checkout-Warenkorb in Redis gespeichert:', data);
+    })
+    .catch(error => {
+        console.error('Fehler beim Speichern des Checkout-Warenkorbs in Redis:', error);
+    });
+}
+
 
 function validateAddresses() {
     const email = document.getElementById('email').value.trim();
@@ -286,7 +381,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Antwort vom Backend:', data);
                 alert(`Bestellung erfolgreich! Bestellnummer: ${data.orderId}, Gesamtbetrag: €${grandTotal.toFixed(2)}`);
 
-                localStorage.removeItem('shoppingCart');
                 cartSubtotal = 0;
 
                 document.getElementById('checkout-cart-items').innerHTML = '<p>Dein Warenkorb ist leer, schäm dich.</p>';

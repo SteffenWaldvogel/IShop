@@ -139,7 +139,6 @@ app.post('/api/checkout', async (req, res) => {
     const {
       sessionId,
       customer,
-      totals,
       shippingOption,
       paymentMethod,
       shippingAddress,
@@ -166,9 +165,51 @@ app.post('/api/checkout', async (req, res) => {
     if (!items || items.length === 0) {
       return res.status(400).json({ error: 'Warenkorb ist leer' });
     }
+    const productIds = items.map(item => item.product_id);
+    const productResult = await client.query(
+      `
+       SELECT product_id, price
+      FROM products
+      WHERE product_id = ANY($1::int[])
+      `,
+      [productIds]
+    );
+    const priceMap = {};
+    for (const row of productResult.rows) {
+      priceMap[row.product_id] = parseFloat(row.price);
+    }
+    let subtotal = 0;
+
+    for (const item of items) {
+      const price = priceMap[item.product_id];
+
+      if (price == null || isNaN(price)) {
+        throw new Error(`Kein Preis für Produkt-ID ${item.product_id} gefunden`);
+      }
+
+      subtotal += price * item.quantity;
+    }
+
 
     const email = customer && customer.email ? customer.email : null;
     const phone = customer && customer.phone ? customer.phone : null;
+
+    const shippingResult = await client.query(
+      `
+      SELECT shipping_method_id, cost
+      FROM shipping_methods
+      WHERE code = $1
+      `,
+      [shippingOption]
+    );
+    if (shippingResult.rows.length === 0) {
+      throw new Error(`Ungültige Versandoption: ${shippingOption}`);
+    }
+    const shippingRow = shippingResult.rows[0];
+    const shippingMethodId = shippingRow.shipping_method_id;
+    const shippingCost = parseFloat(shippingRow.cost);
+
+    const totalsum = subtotal + shippingCost;
 
     await client.query('BEGIN');
 
@@ -242,22 +283,7 @@ app.post('/api/checkout', async (req, res) => {
         ]
       );
     }
-
-    let shippingMethodId;
-    switch (shippingOption) {
-      case 'standard':
-        shippingMethodId = 1;
-        break;
-      case 'express':
-        shippingMethodId = 2;
-        break;
-      case 'premium':
-        shippingMethodId = 3;
-        break;
-      default:
-        shippingMethodId = 1;
-    }
-
+    
     let paymentMethodId;
     switch (paymentMethod) {
       case 'paypal':
@@ -269,8 +295,6 @@ app.post('/api/checkout', async (req, res) => {
       default:
         paymentMethodId = 1;
     }
-
-    const totalsum = totals && typeof totals.grandTotal === 'number' ? totals.grandTotal : 0;
 
     const orderResult = await client.query(
       `

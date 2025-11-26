@@ -1,10 +1,19 @@
 function getSessionId() {
-  let sessionId = localStorage.getItem('sessionId');
-  if (!sessionId) {
-    sessionId = 'ishop_' + Math.random().toString(36).substr(2) + Date.now().toString(36);
-    localStorage.setItem('sessionId', sessionId);
+  const cookieName = 'sessionId=';
+  const cookies = document.cookie.split(';').map(c => c.trim());
+  const existing = cookies.find(c => c.startsWith(cookieName));
+
+  if (existing) {
+    return existing.substring(cookieName.length);
   }
-  return sessionId;
+
+  const newSessionId =
+    'ishop_' + Math.random().toString(36).substr(2) + Date.now().toString(36);
+
+  const maxAgeSeconds = 3600;
+  document.cookie = `${cookieName}${newSessionId}; path=/; max-age=${maxAgeSeconds}`;
+
+  return newSessionId;
 }
 
 const sessionId = getSessionId();
@@ -68,8 +77,6 @@ async function restoreCartFromRedis() {
 
   const cartTotalElement = document.getElementById('cart-total');
   const cartCountElement = document.getElementById('cart-count');
-  const cartItemsElement = document.getElementById('cart-items');
-  const clearCartButton = document.getElementById('clear-cart');
   const productListElement = document.getElementById('product-list');
 
   function addToCart(product) {
@@ -106,72 +113,6 @@ async function restoreCartFromRedis() {
 
 
   function renderCartItems() {
-    cartItemsElement.innerHTML = '';
-
-    cartItems.forEach(item => {
-      const li = document.createElement('li');
-
-      const lineTotal = item.quantity * item.price;
-      li.textContent = `${item.productname} (Menge: ${item.quantity}) - €${lineTotal.toFixed(2)} `;
-
-      const plusButton = document.createElement('button');
-      plusButton.textContent = '+';
-      plusButton.className = 'cart-plus-button';
-
-      plusButton.addEventListener('click', () => {
-        item.quantity += 1;
-        cartCount += 1;
-        cartTotal += item.price;
-
-        cartCountElement.innerText = cartCount;
-        cartTotalElement.textContent = cartTotal.toFixed(2);
-
-        renderCartItems();
-
-      });
-
-      const minusButton = document.createElement('button');
-      minusButton.textContent = '-';
-      minusButton.className = 'cart-minus-button';
-
-      minusButton.addEventListener('click', () => {
-        if (item.quantity > 0) {
-          item.quantity -= 1;
-          cartCount -= 1;
-          cartTotal -= item.price;
-
-          if (item.quantity === 0) {
-            cartItems = cartItems.filter(ci => ci.product_id !== item.product_id);
-          }
-
-          cartCountElement.innerText = cartCount;
-          cartTotalElement.textContent = cartTotal.toFixed(2);
-
-          renderCartItems();
-        }
-      });
-
-      const removeButton = document.createElement('button');
-      removeButton.textContent = '🗑️';
-      removeButton.className = 'cart-remove-button';
-
-      removeButton.addEventListener('click', () => {
-        cartCount -= item.quantity;
-        cartTotal -= item.price * item.quantity;
-        cartItems = cartItems.filter(ci => ci.product_id !== item.product_id);
-
-        cartCountElement.innerText = cartCount;
-        cartTotalElement.textContent = cartTotal.toFixed(2);
-
-        renderCartItems();
-      });
-
-      li.appendChild(plusButton);
-      li.appendChild(minusButton);
-      li.appendChild(removeButton);
-
-      cartItemsElement.appendChild(li);
-    });
     saveCartToRedis();
   }
 
@@ -230,15 +171,5 @@ async function restoreCartFromRedis() {
       productListElement.appendChild(article);
     });
   }
-
-  clearCartButton.addEventListener('click', () => {
-    cartItems = [];
-    cartTotal = 0.00;
-    cartCount = 0;
-
-    cartCountElement.innerText = cartCount;
-    cartTotalElement.textContent = cartTotal.toFixed(2);
-    renderCartItems();
-  });
 
   loadProductsFromApi();

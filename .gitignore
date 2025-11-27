@@ -1,4 +1,4 @@
-# Environment-Dateien
-.env
+# Environment-Files
+backend/.env
 .env.*
 !.env.example

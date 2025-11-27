@@ -1,27 +1,31 @@
 function getSessionId() {
-  const cookieName = 'sessionId=';
-  const cookies = document.cookie.split(';').map(c => c.trim());
-  const existing = cookies.find(c => c.startsWith(cookieName));
+    const cookieName = 'sessionId=';
+    const cookies = document.cookie.split(';').map(c => c.trim());
+    const existing = cookies.find(c => c.startsWith(cookieName));
 
-  if (existing) {
-    return existing.substring(cookieName.length);
-  }
+    if (existing) {
+        return existing.substring(cookieName.length);
+    }
 
-  const newSessionId =
-    'ishop_' + Math.random().toString(36).substr(2) + Date.now().toString(36);
+    const newSessionId =
+        'ishop_' + Math.random().toString(36).substr(2) + Date.now().toString(36);
 
-  const maxAgeSeconds = 3600;
-  document.cookie = `${cookieName}${newSessionId}; path=/; max-age=${maxAgeSeconds}`;
+    const maxAgeSeconds = 3600;
+    document.cookie = `${cookieName}${newSessionId}; path=/; max-age=${maxAgeSeconds}`;
 
-  return newSessionId;
+    return newSessionId;
 }
 
 const sessionId = getSessionId();
 console.log('Session ID (Checkout):', sessionId);
 
 let cartSubtotal = 0; // Zwischensumme
-let checkoutItems = []; 
+let checkoutItems = [];
 let productMap = {};
+
+let currentOrderData = null;
+let currentGrandTotal = 0;
+let paypalButtonsInitialized = false;
 
 async function loadCartForCheckout() {
     const cartItemsContainer = document.getElementById('checkout-cart-items');
@@ -57,12 +61,12 @@ async function loadCartForCheckout() {
             checkoutItems.push({
                 product_id: product.product_id,
                 quantity: item.quantity,
-                price: price,
+                price: price
             });
         });
         renderCheckoutItems();
     }
-    
+
     shippingCostElement.textContent = '0.00';
     grandTotalElement.textContent = cartSubtotal.toFixed(2);
 }
@@ -127,7 +131,7 @@ function renderCheckoutItems() {
 
     cartTotalElement.textContent = cartSubtotal.toFixed(2);
 
-    const shippingCost = getSelectedShippingCost();   
+    const shippingCost = getSelectedShippingCost();
     const grandTotal = cartSubtotal + shippingCost;
 
     shippingCostElement.textContent = shippingCost.toFixed(2);
@@ -147,15 +151,14 @@ function saveCheckoutCart() {
         },
         body: JSON.stringify({ items: itemsForRedis })
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Checkout-Warenkorb in Redis gespeichert:', data);
-    })
-    .catch(error => {
-        console.error('Fehler beim Speichern des Checkout-Warenkorbs in Redis:', error);
-    });
+        .then(response => response.json())
+        .then(data => {
+            console.log('Checkout-Warenkorb in Redis gespeichert:', data);
+        })
+        .catch(error => {
+            console.error('Fehler beim Speichern des Checkout-Warenkorbs in Redis:', error);
+        });
 }
-
 
 function validateAddresses() {
     const email = document.getElementById('email').value.trim();
@@ -273,11 +276,88 @@ function updateTotalsWithShipping() {
     grandTotalElement.textContent = total.toFixed(2);
 }
 
+function setupPayPalButtons() {
+    if (paypalButtonsInitialized) {
+        return;
+    }
+    if (typeof paypal === 'undefined') {
+        console.error('PayPal SDK wurde nicht geladen.');
+        return;
+    }
+
+    paypalButtonsInitialized = true;
+
+    paypal.Buttons({
+        createOrder: function (data, actions) {
+            return fetch('http://localhost:3000/api/paypal/create-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ amount: currentGrandTotal })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.orderId) {
+                        throw new Error('Keine PayPal-Order-ID zurückgegeben');
+                    }
+                    console.log('PayPal-Order vom Server:', data.orderId);
+                    return data.orderId;
+                });
+        },
+
+        onApprove: function (data, actions) {
+            console.log('PayPal onApprove, OrderID:', data.orderID);
+            currentOrderData.paypalOrderId = data.orderID;
+
+            return fetch('http://localhost:3000/api/paypal/capture-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ orderId: data.orderID })
+            })
+                .then(res => res.json())
+                .then(async captureData => {
+                    console.log('Capture Response:', captureData);
+                    if (captureData.status !== 'COMPLETED') {
+                        alert('PayPal-Zahlung konnte nicht abgeschlossen werden.');
+                        throw new Error('PayPal Status nicht COMPLETED');
+                    }
+
+                    const checkoutRes = await fetch('http://localhost:3000/api/checkout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(currentOrderData)
+                    });
+                    const checkoutData = await checkoutRes.json();
+
+                    console.log('Antwort vom Backend (Checkout):', checkoutData);
+
+                    const params = new URLSearchParams({
+                        orderId: checkoutData.orderId,
+                        total: currentGrandTotal.toFixed(2)
+                    });
+                    window.location.href = `order-confirmation.html?${params.toString()}`;
+                })
+                .catch(err => {
+                    console.error('Fehler im PayPal-Flow:', err);
+                    alert('Ein Fehler ist bei der PayPal-Zahlung aufgetreten.');
+                });
+        }
+    }).render('#paypal-button-container');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     loadCartForCheckout();
 
     const billingSameCheckbox = document.getElementById('billing-same');
     const billingAddressSection = document.getElementById('billing-address-section');
+
+    const placeOrderBtn = document.getElementById('place-order-btn');
+    const paypalContainer = document.getElementById('paypal-button-container');
 
     billingSameCheckbox.addEventListener('change', () => {
         if (billingSameCheckbox.checked) {
@@ -294,8 +374,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    const paymentRadios = document.querySelectorAll('input[name="paymentMethod"]');
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            if (radio.value === 'paypal' && radio.checked) {
+                paypalContainer.style.display = 'none';
+                placeOrderBtn.style.display = 'inline-block';
+            } else if (radio.checked) {
+                paypalContainer.style.display = 'none';
+                placeOrderBtn.style.display = 'inline-block';
+            }
+        });
+    });
+
     const checkoutForm = document.querySelector('form');
-    checkoutForm.addEventListener('submit', (e) => {
+    checkoutForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const email = document.getElementById('email').value.trim();
@@ -369,6 +462,17 @@ document.addEventListener('DOMContentLoaded', () => {
             billingSame
         };
 
+        if (selectedPayment.value === 'paypal') {
+            currentGrandTotal = grandTotal;
+            currentOrderData = orderData;
+
+            placeOrderBtn.style.display = 'none';
+            paypalContainer.style.display = 'block';
+
+            setupPayPalButtons();
+            return;
+        }
+
         fetch('http://localhost:3000/api/checkout', {
             method: 'POST',
             headers: {
@@ -379,18 +483,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 console.log('Antwort vom Backend:', data);
-                alert(`Bestellung erfolgreich! Bestellnummer: ${data.orderId}, Gesamtbetrag: €${grandTotal.toFixed(2)}`);
-
-                cartSubtotal = 0;
-
-                document.getElementById('checkout-cart-items').innerHTML = '<p>Dein Warenkorb ist leer, schäm dich.</p>';
-                document.getElementById('checkout-cart-total').textContent = '0.00';
-                document.getElementById('checkout-shipping-cost').textContent = '0.00';
-                document.getElementById('checkout-grand-total').textContent = '0.00';
-            })
-            .catch(err => {
-                console.error('Fehler beim Checkout-Request:', err);
-                alert('Beim Absenden der Bestellung ist ein Fehler aufgetreten.');
+                const params = new URLSearchParams({ orderId: data.orderId, total: grandTotal.toFixed(2) });
+                window.location.href = `order-confirmation.html?${params.toString()}`;
             });
     });
 });

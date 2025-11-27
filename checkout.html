@@ -114,14 +114,19 @@
             <label for="shipping-premium">Ich bin reich und hübsch (3-5 Tage) - 70.00€</label><br><br>
 
             <p>Zahlungsmethoden:</p>
-            <input type="radio" id="payment-paypal" name="paymentMethod" value="paypal" required>
-            <label for="payment-paypal">PayPal</label><br>
             <input type="radio" id="payment-banktransfer" name="paymentMethod" value="payment-prepaid-banktransfer">
             <label for="payment-banktransfer">Vorauskasse</label><br><br>
+            <input type="radio" id="payment-paypal" name="paymentMethod" value="paypal" required>
+            <label for="payment-paypal">PayPal</label><br>
+            <div id="paypal-button-container" style="display:none; margin-top: 10px;"></div>
 
-            <button type="submit">kostenpflichtig bestellen</button>
+
+            <button type="submit" id="place-order-btn">kostenpflichtig bestellen</button>
         </form>
     </section>
+    <script
+        src="https://www.paypal.com/sdk/js?client-id=AXqvCkGlzJHE7ZCvPS6YPRQMvAVdBFH_01GnTrKZz9_rZiuy2xT7V25ai4xVBuMvBkhUV4rwJc1_xwar&currency=EUR&disable-funding=card,sepa"></script>
+
     <script src="checkout.js"></script>
 </body>
 

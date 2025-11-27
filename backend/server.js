@@ -1,3 +1,6 @@
+require('dotenv').config();
+
+const paypal = require('@paypal/checkout-server-sdk');
 const express = require('express');
 const { Pool } = require('pg');
 const redis = require('redis');
@@ -32,8 +35,74 @@ redisClient.connect().then(() => {
   console.error('Fehler bei der Verbindung zu Redis:', err);
 });
 
+function paypalClient() {
+  const environment = new paypal.core.SandboxEnvironment(
+    process.env.PAYPAL_CLIENT_ID,
+    process.env.PAYPAL_CLIENT_SECRET
+  );
+  return new paypal.core.PayPalHttpClient(environment);
+}
+
 app.get('/', (req, res) => {
   res.send('Backend läuft mit Postgres');
+});
+
+app.post('/api/paypal/create-order', async (req, res) => {
+  try {
+    const { amount } = req.body;
+
+    if (!amount) {
+      return res.status(400).json({ error: 'Betrag fehlt' });
+    }
+
+    const request = new paypal.orders.OrdersCreateRequest();
+    request.prefer('return=representation');
+    request.requestBody({
+      intent: 'CAPTURE',
+      purchase_units: [{
+        amount: {
+          currency_code: 'EUR',
+          value: amount.toFixed ? amount.toFixed(2) : amount
+        }
+      }]
+    });
+
+    const response = await paypalClient().execute(request);
+
+    console.log('PayPal Order erstellt:', response.result.id);
+    return res.status(201).json({ orderId: response.result.id, status: response.result.status });
+  } catch (err) {
+    console.error('Fehler bei /api/paypal/create-order:', err);
+    return res.status(500).json({ error: 'Fehler bei Create der PayPal-Bestellung' });
+  }
+});
+
+app.post('/api/paypal/capture-order', async (req, res) => {
+  try {
+    const { orderId } = req.body;
+
+    if (!orderId) {
+      return res.status(400).json({ error: 'Bestell-ID fehlt' });
+    }
+
+    const client = paypalClient();
+    const request = new paypal.orders.OrdersCaptureRequest(orderId);
+    request.requestBody({});
+
+    const response = await client.execute(request);
+    console.log('PayPal Order Request:', response.result.id);
+    console.log('PayPal Order Status:', response.result.status);
+    console.log('PayPal Purchase Units:', response.result.purchase_units);
+
+    return res.status(200).json({
+      orderId: response.result.id,
+      status: response.result.status,
+      purchase_units: response.result.purchase_units
+    });
+  } catch (err) {
+    console.error('Fehler bei /api/paypal/capture-order:', err);
+    return res.status(500).json({ error: 'Fehler bei Capture der PayPal-Bestellung' });
+  }
 });
 
 app.get('/api/products', async (req, res) => {
@@ -143,7 +212,8 @@ app.post('/api/checkout', async (req, res) => {
       paymentMethod,
       shippingAddress,
       billingAddress,
-      billingSame
+      billingSame,
+      paypalOrderId
     } = req.body;
 
     if (!sessionId) {
@@ -165,6 +235,7 @@ app.post('/api/checkout', async (req, res) => {
     if (!items || items.length === 0) {
       return res.status(400).json({ error: 'Warenkorb ist leer' });
     }
+
     const productIds = items.map(item => item.product_id);
     const productResult = await client.query(
       `
@@ -174,10 +245,12 @@ app.post('/api/checkout', async (req, res) => {
       `,
       [productIds]
     );
+
     const priceMap = {};
     for (const row of productResult.rows) {
       priceMap[row.product_id] = parseFloat(row.price);
     }
+
     let subtotal = 0;
 
     for (const item of items) {
@@ -189,7 +262,6 @@ app.post('/api/checkout', async (req, res) => {
 
       subtotal += price * item.quantity;
     }
-
 
     const email = customer && customer.email ? customer.email : null;
     const phone = customer && customer.phone ? customer.phone : null;
@@ -237,6 +309,13 @@ app.post('/api/checkout', async (req, res) => {
           additional_addressline
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        ON CONFLICT (customer_id, addresstype) DO UPDATE SET
+          street = EXCLUDED.street,
+          house_nr = EXCLUDED.house_nr,
+          zip = EXCLUDED.zip,
+          city = EXCLUDED.city,
+          country = EXCLUDED.country,
+          additional_addressline = EXCLUDED.additional_addressline
         `,
         [
           customerId,
@@ -270,6 +349,13 @@ app.post('/api/checkout', async (req, res) => {
           additional_addressline
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        ON CONFLICT (customer_id, addresstype) DO UPDATE SET
+          street = EXCLUDED.street,
+          house_nr = EXCLUDED.house_nr,
+          zip = EXCLUDED.zip,
+          city = EXCLUDED.city,
+          country = EXCLUDED.country,
+          additional_addressline = EXCLUDED.additional_addressline
         `,
         [
           customerId,
@@ -283,7 +369,7 @@ app.post('/api/checkout', async (req, res) => {
         ]
       );
     }
-    
+
     let paymentMethodId;
     switch (paymentMethod) {
       case 'paypal':
@@ -317,7 +403,13 @@ app.post('/api/checkout', async (req, res) => {
         shippingMethodId,
         null,
         1,
-        JSON.stringify({ shippingOption, paymentMethod }),
+        JSON.stringify({
+          shippingOption,
+          paymentMethod,
+          shippingAddress,
+          billingAddress: finalBillingAddress,
+          paypalOrderId
+        }),
         totalsum
       ]
     );
@@ -351,7 +443,6 @@ app.post('/api/checkout', async (req, res) => {
     client.release();
   }
 });
-
 
 app.listen(port, () => {
   console.log('Server bereit auf Port ' + port);

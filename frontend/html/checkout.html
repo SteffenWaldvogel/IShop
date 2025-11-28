@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
@@ -30,7 +30,7 @@
 
             <label for="email">E-Mail:</label>
             <input type="email" id="email" name="email" required
-                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"><br>
+                pattern="[a-zA-Z0-9._%+~-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"><br>
 
             <label for="phone-local">Telefonnummer:</label>
             <span>+49</span>
@@ -125,9 +125,11 @@
         </form>
     </section>
     <script
-        src="https://www.paypal.com/sdk/js?client-id=AXqvCkGlzJHE7ZCvPS6YPRQMvAVdBFH_01GnTrKZz9_rZiuy2xT7V25ai4xVBuMvBkhUV4rwJc1_xwar&currency=EUR&disable-funding=card,sepa"></script>
-
-    <script src="checkout.js"></script>
+        src="https://www.paypal.com/sdk/js?client-id=AXqvCkGlzJHE7ZCvPS6YPRQMvAVdBFH_01GnTrKZz9_rZiuy2xT7V25ai4xVBuMvBkhUV4rwJc1_xwar&currency=EUR&disable-funding=card,sepa">
+    </script>
+    <script src="../checkout-validation.js"></script>
+    <script src="../checkout-session-cart.js"></script>
+    <script src="../checkout.js"></script>
 </body>
 
 </html>

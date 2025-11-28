@@ -1,59 +1,92 @@
-# IShop
-# Portfolio DHBW
+# IShop  
+### DHBW Portfolio Project – Modern Distributed E-Commerce System
 
-## FrontEnd:
-- Built with: HTML, CSS, JS
-- Services: 
-    - Shopfront to browse products, add them to cart
-    - Shopping Cart: Manage Shopping cart (edit, delete products from cart), enter address, choose shipping, go to checkout (Paypal, Prepaid)
-    - Communication: REST API Endpoints
-- Optional: Design with Figma
+iShop is a lightweight e-commerce prototype built as part of the Distributed Systems module.  
+It demonstrates a modern service-oriented architecture with a static frontend, REST backend, Redis caching and a normalized PostgreSQL database.
 
-## Backend:
-- Built with: Node.js, Express
-- Responsibilities: 
-    - Serve API Endpoints for products, cart, shipping, checkout
-    - Validate inputs, Communicate with Postgre, Redis
-    - Provide a mock Paypal endpoint
+---
+
+## Frontend
+
+**Built with:** HTML, CSS, JavaScript
+
+### Services
+
+- **Shopfront**
+  - Browse products
+  - Add items to shopping cart
+
+- **Shopping Cart**
+  - Manage cart items (edit quantities, remove items)
+  - Enter address and customer details
+  - Select shipping method
+  - Proceed to checkout (PayPal mock, Prepaid)
+
+- **Communication**
+  - REST API calls to the backend (products, cart, checkout, etc.)
+
+**Optional:** UI/UX design using Figma
+
+---
+
+## Backend
+
+**Built with:** Node.js, Express
+
+### Responsibilities
+
+- Provide REST API endpoints:
+  - Products  
+  - Cart  
+  - Shipping methods  
+  - Checkout
+
+- Validate incoming data  
+- Communicate with **PostgreSQL** (orders, customers, products)  
+- Communicate with **Redis** (cart persistence)  
+- Provide a **mock PayPal endpoint** to simulate checkout
+
+---
 
 ## Database Schema
 
-The iShop backend uses a normalized PostgreSQL schema.  
-The ER diagram below visualizes all tables, their relationships and constraints.
+A normalized PostgreSQL schema forms the persistent storage layer of iShop.  
+The ER diagram below visualizes all entities, attributes and relationships.
 
 ### Entity-Relationship Diagram (ERD)
 
 ![iShop ERD](db-schema.png)
 
-### Overview
+### Key Entities
 
-Key components of the schema include:
+- **products** – Catalog entries with price, description and stock  
+- **picturelinks** – Image references for products (1:n)  
+- **customers** – Unique email-based customer identity  
+- **customeraddress** – Multiple address types per customer  
+- **orders** – Order header, timestamps, totals, tracking  
+- **orderitems** – Line items for each order  
+- **payment_methods** – Supported payment options  
+- **shipping_methods** – Shipping tiers with code references  
+- **order_statuses** – Order lifecycle states  
 
-- **products**: Product catalog with name, description, price and available stock.
-- **picturelinks**: Image references for each product (1:n relation).
-- **customers**: Customer identity with unique email.
-- **customeraddress**: Multiple address types per customer (e.g. shipping, billing).
-- **orders**: Order header including totals, timestamps, shipping and payment information.
-- **orderitems**: Line items belonging to an order (n:1).
-- **payment_methods**: Supported payment options such as PayPal or Prepaid.
-- **shipping_methods**: Shipping tiers with codes used by the frontend.
-- **order_statuses**: Representing the status lifecycle (Pending, Paid, Shipped, ...).
+Foreign keys maintain referential integrity.  
+All primary keys use auto-incrementing sequences.
 
-Foreign key constraints enforce referential integrity across the entire system.  
-Auto-incrementing sequences are used for ID generation.
+---
 
+## Caching & Shopping Cart
 
-## Caching / Cart:
-- Built with: Redis
-- Key structure: cart:{sessionId} or cart:user:{userId}
-- Value Content: field(productid), value(quantity), Example: cart:abc123 -> {"1": 2, "3": 1}
+**Built with:** Redis
 
-## Checkout:
-- Built with: Mock Paypal, Prepaid(PO-Invoice to mail)
-- Paypal is added but is using MockData to simulate the checkout
+### Structure
 
-## Shipping:
-- Express, Standard shipping Options
-- Map Integration for the Address
-- Updates once a trackingnumber is added
+- Key: `cart:{sessionId}` (guest user)  
 
+- Value: JSON object  
+  Example:
+
+  ```json
+  {
+    "1": 2,
+    "3": 1
+  }

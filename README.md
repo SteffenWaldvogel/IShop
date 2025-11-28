@@ -1,8 +1,19 @@
 # IShop  
 ### DHBW Portfolio Project – Modern Distributed E-Commerce System
 
-iShop is a lightweight e-commerce prototype built as part of the Distributed Systems module.  
+iShop is a lightweight e-commerce prototype built as part of the Distributed Systems module at DHBW.  
 It demonstrates a modern service-oriented architecture with a static frontend, REST backend, Redis caching and a normalized PostgreSQL database.
+
+---
+
+## Features Overview
+
+- Product catalog rendered dynamically
+- Session-based shopping cart persisted in Redis
+- Checkout flow with Mock PayPal and Prepaid payment
+- Normalized PostgreSQL database for orders, customers, products and shipping/payment methods
+- Planned order confirmation page with map, tracking and order details
+- Clean separation between frontend, backend, caching and database layers
 
 ---
 
@@ -14,18 +25,29 @@ It demonstrates a modern service-oriented architecture with a static frontend, R
 
 - **Shopfront**
   - Browse products
-  - Add items to shopping cart
+  - Add products to the cart
 
 - **Shopping Cart**
-  - Manage cart items (edit quantities, remove items)
-  - Enter address and customer details
+  - View cart items
+  - Edit product quantities
+  - Remove items from the cart
+  - Enter customer + address data
   - Select shipping method
-  - Proceed to checkout (PayPal mock, Prepaid)
+  - Proceed to checkout (Mock PayPal or Prepaid)
+
+- **Order Confirmation (Planned)**
+  - Map rendering the shipping address
+  - Display of all order details
+  - Tracking number shown once assigned
 
 - **Communication**
-  - REST API calls to the backend (products, cart, checkout, etc.)
+  - REST API calls to the backend:
+    - Products  
+    - Cart  
+    - Checkout  
+    - Shipping methods  
 
-**Optional:** UI/UX design using Figma
+**Optional:** UI/UX prototyping using Figma.
 
 ---
 
@@ -35,23 +57,23 @@ It demonstrates a modern service-oriented architecture with a static frontend, R
 
 ### Responsibilities
 
-- Provide REST API endpoints:
+- Provide REST API endpoints for:
   - Products  
   - Cart  
   - Shipping methods  
-  - Checkout
+  - Checkout  
 
 - Validate incoming data  
-- Communicate with **PostgreSQL** (orders, customers, products)  
-- Communicate with **Redis** (cart persistence)  
-- Provide a **mock PayPal endpoint** to simulate checkout
+- Communicate with **PostgreSQL** for persistent business entities  
+- Communicate with **Redis** for shopping cart caching  
+- Provide a **mock PayPal endpoint** to simulate checkout behavior
 
 ---
 
 ## Database Schema
 
 A normalized PostgreSQL schema forms the persistent storage layer of iShop.  
-The ER diagram below visualizes all entities, attributes and relationships.
+The ER diagram visualizes all entities, their attributes and relationships.
 
 ### Entity-Relationship Diagram (ERD)
 
@@ -59,18 +81,18 @@ The ER diagram below visualizes all entities, attributes and relationships.
 
 ### Key Entities
 
-- **products** – Catalog entries with price, description and stock  
-- **picturelinks** – Image references for products (1:n)  
-- **customers** – Unique email-based customer identity  
-- **customeraddress** – Multiple address types per customer  
-- **orders** – Order header, timestamps, totals, tracking  
-- **orderitems** – Line items for each order  
-- **payment_methods** – Supported payment options  
-- **shipping_methods** – Shipping tiers with code references  
+- **products** – Catalog entries with name, description, price and stock  
+- **picturelinks** – One or more image URLs per product  
+- **customers** – Customer data (email is unique)  
+- **customeraddress** – Multiple address types per customer (e.g. shipping, billing)  
+- **orders** – Order header including totals, tracking number, payment/shipping method  
+- **orderitems** – Line items of each order  
+- **payment_methods** – PayPal mock, Prepaid, etc.  
+- **shipping_methods** – Standard, Express, Premium (DB-driven configuration)  
 - **order_statuses** – Order lifecycle states  
 
 Foreign keys maintain referential integrity.  
-All primary keys use auto-incrementing sequences.
+All IDs are generated through PostgreSQL sequences.
 
 ---
 
@@ -80,11 +102,10 @@ All primary keys use auto-incrementing sequences.
 
 ### Structure
 
-- Key: `cart:{sessionId}` (guest user)  
+- Key pattern:
+  - `cart:{sessionId}`
 
-- Value: JSON object  
-  Example:
-
+- Value format:
   ```json
   {
     "1": 2,

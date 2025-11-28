@@ -71,3 +71,18 @@ article {
     align-items: center;
     gap: 6px;
 }
+
+.order-item-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #eee;
+}
+
+#order-map {
+  height: 300px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <title>Bestellung abgeschlossen – ishop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+</head>
+
+<body>
+    <header>
+        <h1>ishop</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="checkout.html">Checkout</a>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Danke für deine Bestellung!</h2>
+            <p>Deine Bestellnummer lautet: <strong id="order-id"></strong></p>
+            <p>Gesamtbetrag: <strong id="order-total"></strong></p>
+            <p>Status: <strong id="order-status"></strong></p>
+            <p>Wir haben deine Bestellung erhalten und bearbeiten sie so schnell wie möglich.</p>
+            <a href="index.html">Zurück zum Shop</a>
+        </section>
+        <section>
+            <h3>Bestelldetails</h3>
+            <div id="order-items">
+                <!-- Bestelldetails werden hier dynamisch eingefügt -->
+            </div>
+        </section>
+        <section>
+            <h3>Lieferadresse</h3>
+            <div id="shipping-address">
+                <!-- Lieferadresse wird hier dynamisch eingefügt -->
+            </div>
+            <h3>Rechnungsadresse</h3>
+            <div id="billing-address">
+                <!-- Rechnungsadresse wird hier dynamisch eingefügt -->
+            </div>
+        </section>
+        <section>
+            <div id="order-map"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 ishop</p>
+    </footer>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="order-confirmation.js"></script>
+</body>
+
+</html>

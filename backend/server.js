@@ -288,7 +288,8 @@ app.post('/api/checkout', async (req, res) => {
     const customerResult = await client.query(
       `
       INSERT INTO customers (email, phone)
-      VALUES ($1, $2)
+      VALUES ($1, $2) ON CONFLICT (email) DO UPDATE SET
+        phone = EXCLUDED.phone
       RETURNING customer_id
       `,
       [email, phone]

@@ -16,13 +16,32 @@
     - Validate inputs, Communicate with Postgre, Redis
     - Provide a mock Paypal endpoint
 
-## Database:
-- Built with: PostgreSQL
-- Tables: 
-    - Products: id, productname, description, price, image_url, amount(stock)
-    - Customers: id, firstname, lastname, email, address, address2, country, currency
-    - Orders: id, customerid, totalamount, orderitems, createdat, status, shipping, trackingnumber
-    - Orderitems: id, orderid, productid, quantity, unitprice
+## Database Schema
+
+The iShop backend uses a normalized PostgreSQL schema.  
+The ER diagram below visualizes all tables, their relationships and constraints.
+
+### Entity-Relationship Diagram (ERD)
+
+![iShop ERD](db-schema.png)
+
+### Overview
+
+Key components of the schema include:
+
+- **products**: Product catalog with name, description, price and available stock.
+- **picturelinks**: Image references for each product (1:n relation).
+- **customers**: Customer identity with unique email.
+- **customeraddress**: Multiple address types per customer (e.g. shipping, billing).
+- **orders**: Order header including totals, timestamps, shipping and payment information.
+- **orderitems**: Line items belonging to an order (n:1).
+- **payment_methods**: Supported payment options such as PayPal or Prepaid.
+- **shipping_methods**: Shipping tiers with codes used by the frontend.
+- **order_statuses**: Representing the status lifecycle (Pending, Paid, Shipped, ...).
+
+Foreign key constraints enforce referential integrity across the entire system.  
+Auto-incrementing sequences are used for ID generation.
+
 
 ## Caching / Cart:
 - Built with: Redis

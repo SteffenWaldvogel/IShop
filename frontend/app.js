@@ -27,7 +27,8 @@ function loadProductsFromApi() {
       productname: product.productname,
       description: product.description,
       price: parseFloat(product.price),
-      quanity: product.quantity
+      quanity: product.quantity,
+      picturelink: product.picturelink
     }));
     console.log('Products loaded:', products);
     renderProducts();
@@ -159,6 +160,12 @@ async function restoreCartFromRedis() {
       button.textContent = 'Add to Cart';
       button.className = 'add-to-cart';
 
+      const image = document.createElement('img');
+      image.src = '../' + product.picturelink;
+      image.alt = product.productname;
+      image.className = 'product-image';
+      article.appendChild(image);
+
       button.addEventListener('click', () => {
         addToCart(product);
       });
@@ -167,6 +174,7 @@ async function restoreCartFromRedis() {
       article.appendChild(desc);
       article.appendChild(price);
       article.appendChild(button);
+      article.appendChild(image);
 
       productListElement.appendChild(article);
     });

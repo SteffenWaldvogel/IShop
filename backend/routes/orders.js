@@ -75,7 +75,7 @@ router.get('/api/orders/:orderId', async (req, res) => {
       orderId: order.order_id,
       time: order.time,
       totalsum: parseFloat(order.totalsum),
-      trackingnumber: order.trackingnumber,
+      trackingNumber: order.trackingnumber,
       status: order.status_name,
       paymentMethod: order.payment_method,
       shippingMethod: {

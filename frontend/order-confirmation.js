@@ -30,7 +30,7 @@ if (orderId) {
             if (!res.ok) {
                 throw new Error('Netzwerkantwort war nicht ok');
             }
-            return res.json();          // <-- hier holen wir das JSON
+            return res.json();
         })
         .then(order => {
             console.log('Bestelldaten:', order);
@@ -38,6 +38,10 @@ if (orderId) {
             const statusElement = document.getElementById('order-status');
             if (statusElement) {
                 statusElement.textContent = order.status || 'Unbekannt';
+            }
+            const trackingElement = document.getElementById('order-tracking');
+            if (trackingElement) {
+                trackingElement.textContent = order.trackingNumber || 'Noch nicht verfügbar';
             }
 
             const itemsContainer = document.getElementById('order-items');
@@ -84,7 +88,6 @@ if (orderId) {
             renderAddress(shippingContainer, order.shippingAddress);
             renderAddress(billingContainer, order.billingAddress);
 
-            // NEU: Karte für Lieferadresse anzeigen, falls vorhanden
             if (order.shippingAddress) {
                 showMapForAddress(order.shippingAddress);
             }

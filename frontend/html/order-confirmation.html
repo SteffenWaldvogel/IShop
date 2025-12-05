@@ -3,57 +3,98 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Bestellung abgeschlossen – ishop</title>
+    <title>Bestellung abgeschlossen – iShop</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../base.css">
+    <link rel="stylesheet" href="../order-confirmation.css">
+
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 </head>
 
-<body>
-    <header>
-        <h1>ishop</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="checkout.html">Checkout</a>
-        </nav>
-    </header>
+<body class="bento-page order-confirmation-page">
+    <div class="ishop-shell">
 
-    <main>
-        <section>
-            <h2>Danke für deine Bestellung!</h2>
-            <p>Deine Bestellnummer lautet: <strong id="order-id"></strong></p>
-            <p>Gesamtbetrag: <strong id="order-total"></strong></p>
-            <p>Status: <strong id="order-status"></strong></p>
-            <p>Sendungsverfolgungsnummer: <strong id="order-tracking"></strong></p>
-            <p>Wir haben deine Bestellung erhalten und bearbeiten sie so schnell wie möglich.</p>
-            <a href="index.html">Zurück zum Shop</a>
-        </section>
-        <section>
-            <h3>Bestelldetails</h3>
-            <div id="order-items">
-                <!-- Bestelldetails werden hier dynamisch eingefügt -->
+        <header class="glass-card ishop-header">
+            <div class="header-left">
+                <div class="logo">ISHOP</div>
+                <nav class="main-nav">
+                    <a href="index.html" class="nav-btn">Home</a>
+                    <a href="index.html#products" class="nav-btn">Produkte</a>
+                    <a href="#" class="nav-btn">Kontakt</a>
+                </nav>
             </div>
-        </section>
-        <section>
-            <h3>Lieferadresse</h3>
-            <div id="shipping-address">
-                <!-- Lieferadresse wird hier dynamisch eingefügt -->
+            <div class="header-right">
+                <div class="cart-summary">
+                    <span class="cart-label">Warenkorb:&nbsp;</span>
+                    <span id="cart-count">0</span> Artikel ·
+                    <span id="cart-total">0.00 €</span>
+                </div>
+                <a href="checkout.html" class="cart-btn">Zum Warenkorb</a>
             </div>
-            <h3>Rechnungsadresse</h3>
-            <div id="billing-address">
-                <!-- Rechnungsadresse wird hier dynamisch eingefügt -->
-            </div>
-        </section>
-        <section>
-            <div id="order-map"></div>
-        </section>
-    </main>
+        </header>
 
-    <footer>
-        <p>© 2025 ishop</p>
-    </footer>
+        <main class="ishop-main oc-main">
+
+            <!-- Karte + Basisinfos -->
+            <section class="glass-card oc-map-hero">
+                <div class="oc-hero-text">
+                    <h1>Danke für deine Bestellung!</h1>
+                    <p>Wir haben deine Bestellung erhalten und bearbeiten sie so schnell wie möglich.</p>
+                    <a href="index.html" class="oc-back-link">Zurück zum Shop</a>
+                </div>
+
+                <div class="oc-hero-meta">
+                    <div class="oc-meta-row">
+                        <span class="oc-meta-label">Bestellnummer</span>
+                        <span class="oc-meta-value" id="order-id"></span>
+                    </div>
+                    <div class="oc-meta-row">
+                        <span class="oc-meta-label">Gesamtbetrag</span>
+                        <span class="oc-meta-value" id="order-total"></span>
+                    </div>
+                    <div class="oc-meta-row">
+                        <span class="oc-meta-label">Status</span>
+                        <span class="oc-meta-value" id="order-status"></span>
+                    </div>
+                    <div class="oc-meta-row">
+                        <span class="oc-meta-label">Sendungsverfolgung</span>
+                        <span class="oc-meta-value" id="order-tracking"></span>
+                    </div>
+                </div>
+
+                <div class="oc-map-wrapper">
+                    <div id="order-map"></div>
+                </div>
+            </section>
+
+            <!-- Produkte + Adressen -->
+            <section class="oc-grid">
+                <div class="glass-card oc-products">
+                    <h2>Bestellter Warenkorb</h2>
+                    <div id="order-items"></div>
+                </div>
+
+                <div class="glass-card oc-details">
+                    <div class="oc-address-block">
+                        <h2>Lieferadresse</h2>
+                        <div id="shipping-address"></div>
+                    </div>
+
+                    <div class="oc-address-block">
+                        <h2>Rechnungsadresse</h2>
+                        <div id="billing-address"></div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="ishop-footer">
+                © 2025 iShop
+            </footer>
+        </main>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="../order-confirmation.js"></script>

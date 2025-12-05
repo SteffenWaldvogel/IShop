@@ -1,0 +1,236 @@
+.bento-page .ishop-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.bento-page .product-strip {
+  display: flex;
+  align-items: stretch;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+}
+
+.bento-page .product-strip-inner {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.3rem;
+  scroll-behavior: smooth;
+  flex: 1 1 auto;
+}
+
+.bento-page .product-strip-inner::-webkit-scrollbar {
+  height: 6px;
+}
+
+.bento-page .product-strip-inner::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 999px;
+}
+
+.bento-page .product-strip-inner::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.9);
+  border-radius: 999px;
+}
+
+.bento-page .product-strip-inner::-webkit-scrollbar-thumb:hover {
+  background: rgba(209, 213, 219, 0.95);
+}
+
+.bento-page .product-strip-inner {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.9) rgba(15, 23, 42, 0.9);
+}
+
+.bento-page #product-list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+}
+
+.bento-page #product-list article {
+  min-width: 140px;
+  max-width: 140px;
+  padding: 0.55rem 0.7rem 0.7rem;
+  border-radius: 0.9rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(51, 65, 85, 0.8);
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.bento-page #product-list article:hover {
+  transform: translateY(-2px);
+  border-color: rgba(96, 165, 250, 0.9);
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.9);
+  background: rgba(15, 23, 42, 0.98);
+}
+
+.bento-page #product-list h3 {
+  margin: 0;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.bento-page #product-list .product-image {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 0.7rem;
+  margin-bottom: 0.1rem;
+  background-color: #020617;
+}
+
+.bento-page .bento-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr);
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "main details"
+    "main description";
+  gap: 1.25rem;
+}
+
+.bento-page .bento-main {
+  grid-area: main;
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+}
+
+.bento-page .main-product-image {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at top left, #38bdf8, #0f172a 40%, #000 90%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bento-page .main-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.bento-page .main-product-overlay {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 1rem 1.2rem;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.94), transparent);
+}
+
+.bento-page .main-product-overlay h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.bento-page .main-product-subtitle {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.bento-page .bento-details {
+  grid-area: details;
+  padding: 1.25rem 1.3rem;
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.bento-page .details-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.bento-page .details-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.bento-page .details-label {
+  color: #9ca3af;
+}
+
+.bento-page .details-value {
+  font-weight: 500;
+}
+
+/* Menge-Selector perfekt mittig */
+
+.bento-page .quantity-control {
+  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  overflow: hidden;
+  height: 2.6rem;
+}
+
+.bento-page .qty-btn {
+  border: none;
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: inherit;
+}
+
+.bento-page #qty-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  text-align: center;
+  color: inherit;
+  outline: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.95rem;
+}
+
+/* Beschreibung unten */
+
+.bento-page .bento-description {
+  grid-area: description;
+  padding: 1.1rem 1.3rem;
+}
+
+.bento-page .bento-description h3 {
+  margin: 0 0 0.4rem;
+}
+
+.bento-page .bento-description p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #e5e7eb;
+}
+
+@media (max-width: 900px) {
+  .bento-page .bento-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "main"
+      "details"
+      "description";
+  }
+
+  .bento-page .product-strip {
+    padding-inline: 0.5rem;
+  }
+}

@@ -1,48 +1,107 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 
 <head>
   <meta charset="utf-8">
-  <title>ishop</title>
+  <title>iShop – Produkte</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../base.css">
+  <link rel="stylesheet" href="../products.css">
 
 </head>
-<body>
-  <header>
-    <h1>ishop</h1>
-    <div>
-        Cart: <span id="cart-count">0</span> items
-        Total: <span id="cart-total">0.00</span>€
-        <a href="checkout.html">Checkout</a>
-    </div>
-    <nav>
-      <a href="#">Home</a>
-      <a href="#">Shop</a>
-      <a href="#">About</a>
-      <a href="#">Contact</a>
-    </nav>
-  </header>
 
-  <main>
-    
-    <section>
-      <h2>Welcome to ishop</h2>
-      <p>Your one-stop shop for all your needs!</p>
-    </section>
-    <section>
-      <h2>Featured Products</h2>
-      <div id="product-list">
-        <!-- Products will be dynamically added here -->
+<body class="bento-page">
+  <div class="ishop-shell">
+
+    <!-- Header -->
+    <header class="ishop-header glass-card">
+      <div class="header-left">
+        <div class="logo">ISHOP</div>
+        <nav class="main-nav">
+          <button class="nav-btn is-active" type="button">Home</button>
+          <button class="nav-btn" type="button">Produkte</button>
+          <button class="nav-btn" type="button">Kontakt</button>
+        </nav>
       </div>
-    </section>
-  </main>
 
-  <footer>
-    <p>© 2025 ishop</p>
-  </footer>
+      <div class="header-right">
+        <div class="cart-summary">
+          <span class="cart-label">Warenkorb:</span>
+          <span id="cart-count">0</span> Artikel ·
+          <span id="cart-total">0.00</span> €
+        </div>
+        <a class="cart-btn" href="checkout.html">Zum Warenkorb</a>
+      </div>
+    </header>
 
-  <script src = "../app.js"></script>
+    <main class="ishop-main">
+
+      <!-- Produkt-Strip (nur Bild + Titel, horizontal scrollbar) -->
+      <section class="product-strip glass-card">
+        <div id="product-list" class="product-strip-inner">
+          <!-- Produkte werden per JS eingefügt -->
+        </div>
+      </section>
+
+      <!-- Bento-Grid: Main Product + Details + Beschreibung -->
+      <section class="bento-grid">
+
+        <!-- Main Product links -->
+        <article class="bento-main glass-card">
+          <div class="main-product-image" id="main-product-image"></div>
+          <div class="main-product-overlay">
+            <h2 id="main-product-title">Produkt auswählen</h2>
+            <p class="main-product-subtitle">
+              Klicke oben auf ein Produkt, um Details zu sehen.
+            </p>
+          </div>
+        </article>
+
+        <!-- Detail-Panel rechts -->
+        <aside class="bento-details glass-card">
+          <h3 class="details-title" id="detail-title">Keine Auswahl</h3>
+
+          <div class="details-row">
+            <div class="details-label">Preis</div>
+            <div class="details-value" id="detail-price">–</div>
+          </div>
+          <div class="details-row">
+            <div class="details-label">Produkt-ID</div>
+            <div class="details-value" id="detail-id">–</div>
+          </div>
+          <div class="details-row">
+            <div class="details-label">Verfügbar</div>
+            <div class="details-value" id="detail-stock">–</div>
+          </div>
+
+          <div class="quantity-control">
+            <button class="qty-btn" type="button" id="qty-minus">−</button>
+            <input type="number" id="qty-input" min="1" value="1">
+            <button class="qty-btn" type="button" id="qty-plus">+</button>
+          </div>
+
+          <button class="primary-btn" type="button" id="add-to-cart-btn">
+            In den Warenkorb
+          </button>
+        </aside>
+
+        <!-- Beschreibung unten -->
+        <section class="bento-description glass-card">
+          <h3>Beschreibung</h3>
+          <p id="detail-description">
+            Wähle oben ein Produkt aus, um die Beschreibung zu sehen.
+          </p>
+        </section>
+
+      </section>
+    </main>
+
+    <footer class="ishop-footer">
+      <p>© 2025 iShop</p>
+    </footer>
+  </div>
+
+  <script src="../app.js"></script>
 </body>
 
 </html>

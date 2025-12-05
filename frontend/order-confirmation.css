@@ -1,0 +1,179 @@
+.order-confirmation-page .oc-main {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.order-confirmation-page .oc-map-hero {
+  padding: 1.4rem 1.5rem 1.6rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
+  grid-template-rows: auto 280px;
+  grid-template-areas:
+    "text meta"
+    "map  map";
+  gap: 1.25rem;
+}
+
+.order-confirmation-page .oc-hero-text {
+  grid-area: text;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.order-confirmation-page .oc-hero-text h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.order-confirmation-page .oc-hero-text p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #e5e7eb;
+}
+
+.order-confirmation-page .oc-back-link {
+  margin-top: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.order-confirmation-page .oc-back-link:hover {
+  background: rgba(37, 99, 235, 0.35);
+  border-color: rgba(96, 165, 250, 0.9);
+  transform: translateY(-1px);
+}
+
+.order-confirmation-page .oc-hero-meta {
+  grid-area: meta;
+  display: grid;
+  gap: 0.5rem;
+  align-content: flex-start;
+  padding: 0.4rem 0.2rem;
+}
+
+.order-confirmation-page .oc-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.order-confirmation-page .oc-meta-label {
+  color: #9ca3af;
+}
+
+.order-confirmation-page .oc-meta-value {
+  font-weight: 500;
+}
+
+.order-confirmation-page .oc-map-wrapper {
+  grid-area: map;
+  margin-top: 0.3rem;
+}
+
+.order-confirmation-page #order-map {
+  width: 100%;
+  height: 260px;
+  border-radius: 1.1rem;
+  border: 1px solid rgba(51, 65, 85, 0.9);
+  overflow: hidden;
+}
+
+.order-confirmation-page .oc-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.1fr);
+  gap: 1.25rem;
+}
+
+.order-confirmation-page .oc-products,
+.order-confirmation-page .oc-details {
+  padding: 1.25rem 1.4rem;
+}
+
+.order-confirmation-page .oc-products h2,
+.order-confirmation-page .oc-details h2 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+.order-confirmation-page #order-items {
+  margin-top: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.order-confirmation-page .order-item-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) auto auto auto;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.7rem;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(51, 65, 85, 0.9);
+  font-size: 0.85rem;
+}
+
+.order-confirmation-page .order-item-row .item-name {
+  font-weight: 500;
+}
+
+.order-confirmation-page .order-item-row .item-quantity,
+.order-confirmation-page .order-item-row .item-price,
+.order-confirmation-page .order-item-row .item-total {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.order-confirmation-page .oc-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.order-confirmation-page .oc-address-block h2 {
+  margin: 0 0 0.5rem;
+}
+
+.order-confirmation-page .oc-address-block p {
+  margin: 0.1rem 0;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .order-confirmation-page .oc-map-hero {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 260px;
+    grid-template-areas:
+      "text"
+      "meta"
+      "map";
+  }
+
+  .order-confirmation-page .oc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .order-confirmation-page .order-item-row {
+    grid-template-columns: minmax(0, 1.6fr) auto;
+    grid-auto-rows: auto;
+    row-gap: 0.2rem;
+  }
+
+  .order-confirmation-page .order-item-row .item-price,
+  .order-confirmation-page .order-item-row .item-total {
+    font-size: 0.8rem;
+  }
+}

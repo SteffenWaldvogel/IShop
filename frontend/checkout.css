@@ -27,6 +27,8 @@
   margin-bottom: 0.75rem;
 }
 
+/* Formular */
+
 .checkout-page .checkout-form {
   display: grid;
   gap: 0.7rem;
@@ -89,6 +91,8 @@
   font-size: 0.8rem;
 }
 
+/* Rechnungsadresse Toggle */
+
 .checkout-page .checkbox-row {
   display: flex;
   align-items: center;
@@ -119,6 +123,8 @@
   padding-top: 0.8rem;
   border-top: 1px solid rgba(71, 85, 105, 0.7);
 }
+
+/* Versand & Zahlung */
 
 .checkout-page .shipping-options,
 .checkout-page .payment-options {
@@ -164,11 +170,15 @@
   align-items: center;
 }
 
+/* Checkout-Button (Primary) */
+
 .checkout-page .checkout-submit {
   margin-top: 1rem;
   width: 100%;
   justify-content: center;
 }
+
+/* Warenkorb rechts */
 
 .checkout-page .checkout-cart-box {
   display: flex;
@@ -195,6 +205,8 @@
   border-radius: 999px;
 }
 
+/* Einzelne Cart-Items + Buttons */
+
 .checkout-page .checkout-cart-item {
   display: flex;
   align-items: center;
@@ -207,11 +219,62 @@
   font-size: 0.85rem;
 }
 
+.checkout-page .checkout-cart-item .item-name {
+  font-weight: 500;
+}
+
+.checkout-page .checkout-cart-item .item-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* kleine runden Buttons in der Bestellübersicht */
+
+.checkout-page .checkout-cart-item .qty-minus,
+.checkout-page .checkout-cart-item .qty-plus,
+.checkout-page .checkout-cart-item .item-remove {
+  min-width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.8);
+  background: rgba(15, 23, 42, 0.95);
+  color: #f9fafb;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.checkout-page .checkout-cart-item .qty-minus:hover,
+.checkout-page .checkout-cart-item .qty-plus:hover,
+.checkout-page .checkout-cart-item .item-remove:hover {
+  background: linear-gradient(to right, #2563eb, #22c55e);
+  border-color: rgba(96, 165, 250, 0.9);
+  transform: translateY(-1px);
+}
+
+.checkout-page .checkout-cart-item .item-qty {
+  margin: 0 0.2rem;
+}
+
+.checkout-page .checkout-cart-item .item-total {
+  margin-left: 0.5rem;
+}
+
+/* Zusammenfassung */
+
 .checkout-page .order-summary {
   margin-top: 0.6rem;
   padding-top: 0.6rem;
   border-top: 1px dashed rgba(148, 163, 184, 0.8);
 }
+
+/* Responsive */
 
 @media (max-width: 900px) {
   .checkout-page .checkout-grid {

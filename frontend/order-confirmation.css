@@ -39,18 +39,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.4rem 0.9rem;
+  padding: 0.45rem 1rem;
   border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.6);
-  background: rgba(15, 23, 42, 0.9);
-  color: #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.7);
   font-size: 0.85rem;
   text-decoration: none;
+  color: #e5e7eb;
+  background: rgba(15, 23, 42, 0.9);
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
 .order-confirmation-page .oc-back-link:hover {
-  background: rgba(37, 99, 235, 0.35);
+  background: rgba(37, 99, 235, 0.8);
   border-color: rgba(96, 165, 250, 0.9);
   transform: translateY(-1px);
 }

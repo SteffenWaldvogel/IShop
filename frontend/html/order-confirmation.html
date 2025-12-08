@@ -5,44 +5,59 @@
     <meta charset="utf-8">
     <title>Bestellung abgeschlossen – iShop</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- Deine Styles -->
     <link rel="stylesheet" href="../style/base.css">
     <link rel="stylesheet" href="../style/order-confirmation.css">
 
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="">
 </head>
 
 <body class="bento-page order-confirmation-page">
-    <div class="ishop-shell">
+    <div class="ishop-shell container-lg py-4">
 
-        <header class="glass-card ishop-header">
-            <div class="header-left">
+        <!-- Header -->
+        <header class="glass-card ishop-header d-flex justify-content-between align-items-center mb-4">
+            <div class="header-left d-flex align-items-center gap-3">
                 <div class="logo">ISHOP</div>
-                <nav class="main-nav">
-                    <a href="index.html" class="nav-btn">Home</a>
-                    <a href="index.html#products" class="nav-btn">Produkte</a>
-                    <a href="#" class="nav-btn">Kontakt</a>
+                <nav class="main-nav d-flex gap-2">
+                    <a href="index.html" class="nav-btn btn btn-outline-light btn-sm">Home</a>
+                    <a href="index.html#products" class="nav-btn btn btn-outline-light btn-sm">Produkte</a>
+                    <a href="#" class="nav-btn btn btn-outline-light btn-sm">Kontakt</a>
                 </nav>
             </div>
-            <div class="header-right">
-                <div class="cart-summary">
+            <div class="header-right d-flex align-items-center gap-3">
+                <div class="cart-summary small text-end">
                     <span class="cart-label">Warenkorb:&nbsp;</span>
                     <span id="cart-count">0</span> Artikel ·
                     <span id="cart-total">0.00 €</span>
                 </div>
-                <a href="checkout.html" class="cart-btn">Zum Warenkorb</a>
+                <a href="checkout.html" class="cart-btn btn btn-primary btn-sm">Zum Warenkorb</a>
             </div>
         </header>
 
         <main class="ishop-main oc-main">
 
-            <!-- Karte + Basisinfos -->
-            <section class="glass-card oc-map-hero">
-                <div class="oc-hero-text">
+            <!-- OBERER BLOCK: Karte + Meta -->
+            <section class="glass-card oc-map-hero mb-4">
+                <div class="oc-hero-text mb-3">
                     <h1>Danke für deine Bestellung!</h1>
-                    <p>Wir haben deine Bestellung erhalten und bearbeiten sie so schnell wie möglich.</p>
-                    <a href="index.html" class="oc-back-link">Zurück zum Shop</a>
+                    <p class="text-muted">
+                        Wir haben deine Bestellung erhalten und bearbeiten sie so schnell wie möglich.
+                    </p>
+                    <a href="index.html" class="oc-back-link">
+                        Zurück zum Shop
+                    </a>
                 </div>
 
                 <div class="oc-hero-meta">
@@ -64,40 +79,51 @@
                     </div>
                 </div>
 
-                <div class="oc-map-wrapper">
+                <div class="oc-map-wrapper mt-3">
                     <div id="order-map"></div>
                 </div>
             </section>
 
-            <!-- Produkte + Adressen -->
+            <!-- UNTERE REIHE: LINKS Warenkorb, RECHTS Adressen -->
             <section class="oc-grid">
+                <!-- Linke Karte: Bestellter Warenkorb -->
                 <div class="glass-card oc-products">
-                    <h2>Bestellter Warenkorb</h2>
+                    <h2 class="mb-3">Bestellter Warenkorb</h2>
                     <div id="order-items"></div>
                 </div>
 
+                <!-- Rechte Karte: Liefer- und Rechnungsadresse -->
                 <div class="glass-card oc-details">
-                    <div class="oc-address-block">
-                        <h2>Lieferadresse</h2>
+                    <div class="oc-address-block mb-3">
+                        <h2 class="h5">Lieferadresse</h2>
                         <div id="shipping-address"></div>
                     </div>
 
                     <div class="oc-address-block">
-                        <h2>Rechnungsadresse</h2>
+                        <h2 class="h5">Rechnungsadresse</h2>
                         <div id="billing-address"></div>
                     </div>
                 </div>
             </section>
 
-            <footer class="ishop-footer">
+            <footer class="ishop-footer mt-4 text-center text-muted small">
                 © 2025 iShop
             </footer>
         </main>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Leaflet JS -->
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin="">
+    </script>
     <script src="../order-confirmation.js"></script>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
 </body>
 
 </html>

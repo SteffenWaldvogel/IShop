@@ -5,20 +5,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- Deine Styles -->
     <link rel="stylesheet" href="../style/base.css">
     <link rel="stylesheet" href="../style/checkout.css">
 </head>
 
 <body class="bento-page checkout-page">
-    <div class="ishop-shell">
+    <div class="ishop-shell container-lg py-4">
 
         <!-- Header wie auf der Startseite -->
-        <header class="ishop-header glass-card">
+        <header class="ishop-header glass-card mb-4">
             <div class="header-left">
                 <div class="logo">ISHOP</div>
                 <nav class="main-nav">
-                    <button class="nav-btn" type="button" onclick="window.location.href='index.html'">Home</button>
-                    <button class="nav-btn is-active" type="button">Produkte</button>
+                    <button class="nav-btn"
+                            type="button"
+                            onclick="window.location.href='index.html'">Home</button>
+                    <!-- Auf Checkout ist weiter "Produkte" aktiv wie in deinem Screenshot -->
+                    <button class="nav-btn is-active"
+                            type="button"
+                            onclick="window.location.href='index.html#products'">Produkte</button>
                     <button class="nav-btn" type="button">Kontakt</button>
                 </nav>
             </div>
@@ -26,8 +38,6 @@
             <div class="header-right">
                 <div class="cart-summary">
                     <span class="cart-label">Warenkorb:</span>
-                    <!-- Diese Werte werden von checkout-session-cart.js auf der Checkout-Seite nicht genutzt,
-               bleiben aber für Konsistenz/Optik stehen -->
                     <span id="cart-count">0</span> Artikel ·
                     <span id="cart-total">0.00</span> €
                 </div>
@@ -36,9 +46,10 @@
         </header>
 
         <main class="checkout-main">
-            <header class="checkout-headline">
-                <h1>Checkout</h1>
-                <p>Hier sehen Sie Ihre Bestellung und geben Ihre Adresse ein.</p>
+            <!-- Wird durch CSS ausgeblendet, darf aber für Semantik bleiben -->
+            <header class="checkout-headline mb-4 text-center">
+                <h1 class="mb-1">Checkout</h1>
+                <p class="text-muted">Hier sehen Sie Ihre Bestellung und geben Ihre Adresse ein.</p>
             </header>
 
             <section class="checkout-grid">
@@ -46,132 +57,214 @@
                 <section class="checkout-card glass-card checkout-card-left">
                     <h2>Liefer- und Zahlungsdaten</h2>
 
+                    <!-- Untertitel oben wie in deinem „soll so aussehen“-Screenshot -->
+                    <h3 class="checkout-section-title">Lieferadresse</h3>
+
                     <form class="checkout-form">
 
-                        <label for="email">E-Mail:</label>
-                        <input type="email" id="email" name="email" required
-                            pattern="[a-zA-Z0-9._%+~-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}">
-
-                        <label for="phone-local">Telefonnummer:</label>
-                        <div class="phone-row">
-                            <span class="phone-prefix">+49</span>
-                            <input type="tel" id="phone-local" name="phone-local" required pattern="[0-9\s\-]{6,15}"
-                                placeholder="1512345678">
+                        <!-- E-Mail -->
+                        <div>
+                            <label for="email">E-Mail:</label>
+                            <input type="email"
+                                   id="email"
+                                   name="email"
+                                   required
+                                   pattern="[a-zA-Z0-9._%+~-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}">
                         </div>
-                        <!-- Lieferadresse -->
-                        <h3 class="checkout-section-title">Lieferadresse</h3>
 
+                        <!-- Telefon -->
+                        <div>
+                            <label for="phone-local">Telefonnummer:</label>
+                            <div class="phone-row">
+                                <span class="phone-prefix">+49</span>
+                                <input type="tel"
+                                       id="phone-local"
+                                       name="phone-local"
+                                       required
+                                       pattern="[0-9\s\-]{6,15}"
+                                       placeholder="1512345678">
+                            </div>
+                        </div>
 
-
+                        <!-- Adressfelder in 2 Spalten wie früher, OHNE Bootstrap row/col -->
                         <div class="form-row-two">
                             <div class="form-col">
                                 <label for="first-name">Vorname:</label>
-                                <input type="text" id="first-name" name="first-name" required minlength="2"
-                                    pattern="[A-Za-zÄÖÜäöüß\s\-]{2,}">
+                                <input type="text"
+                                       id="first-name"
+                                       name="first-name"
+                                       required
+                                       minlength="2"
+                                       pattern="[A-Za-zÄÖÜäöüß\s\-]{2,}">
                             </div>
                             <div class="form-col">
                                 <label for="last-name">Nachname:</label>
-                                <input type="text" id="last-name" name="last-name" required minlength="2"
-                                    pattern="[A-Za-zÄÖÜäöüß\s\-]{2,}">
+                                <input type="text"
+                                       id="last-name"
+                                       name="last-name"
+                                       required
+                                       minlength="2"
+                                       pattern="[A-Za-zÄÖÜäöüß\s\-]{2,}">
                             </div>
                         </div>
 
-                        <label for="street">Straße:</label>
-                        <input type="text" id="street" name="street" required minlength="2">
+                        <div>
+                            <label for="street">Straße:</label>
+                            <input type="text"
+                                   id="street"
+                                   name="street"
+                                   required
+                                   minlength="2">
+                        </div>
 
                         <div class="form-row-two">
                             <div class="form-col">
                                 <label for="house-number">Hausnummer:</label>
-                                <input type="text" id="house-number" name="house-number" required
-                                    pattern="[0-9]{1,4}[A-Za-z]?">
+                                <input type="text"
+                                       id="house-number"
+                                       name="house-number"
+                                       required
+                                       pattern="[0-9]{1,4}[A-Za-z]?">
                             </div>
                             <div class="form-col">
                                 <label for="address-line2">Adresszusatz:</label>
-                                <input type="text" id="address-line2" name="address-line2">
+                                <input type="text"
+                                       id="address-line2"
+                                       name="address-line2">
                             </div>
                         </div>
 
                         <div class="form-row-two">
                             <div class="form-col">
                                 <label for="city">Stadt:</label>
-                                <input type="text" id="city" name="city" required minlength="2"
-                                    pattern="[A-Za-zÄÖÜäöüß\s\-]{2,}">
+                                <input type="text"
+                                       id="city"
+                                       name="city"
+                                       required
+                                       minlength="2"
+                                       pattern="[A-Za-zÄÖÜäöüß\s\-]{2,}">
                             </div>
                             <div class="form-col">
                                 <label for="zip">Postleitzahl:</label>
-                                <input type="text" id="zip" name="zip" required pattern="[0-9]{5}" minlength="5"
-                                    maxlength="5" inputmode="numeric">
+                                <input type="text"
+                                       id="zip"
+                                       name="zip"
+                                       required
+                                       pattern="[0-9]{5}"
+                                       minlength="5"
+                                       maxlength="5"
+                                       inputmode="numeric">
                             </div>
                         </div>
 
-                        <label for="country">Land:</label>
-                        <input type="text" id="country" name="country" required minlength="3">
+                        <div>
+                            <label for="country">Land:</label>
+                            <input type="text"
+                                   id="country"
+                                   name="country"
+                                   required
+                                   minlength="3">
+                        </div>
 
+                        <!-- Checkbox-Pill: ohne Bootstrap-Klassen, damit dein Style greift -->
                         <div class="checkbox-row">
                             <input type="checkbox" id="billing-same" checked>
-                            <label for="billing-same">Rechnungsadresse entspricht der Lieferadresse</label>
+                            <label for="billing-same">
+                                Rechnungsadresse entspricht der Lieferadresse
+                            </label>
                         </div>
 
                         <!-- Rechnungsadresse (optional) -->
-                        <div id="billing-address-section" class="billing-address-extra" style="display: none;">
+                        <div id="billing-address-section"
+                             class="billing-address-extra"
+                             style="display: none;">
                             <h3 class="checkout-section-title">Rechnungsadresse</h3>
 
                             <div class="form-row-two">
                                 <div class="form-col">
                                     <label for="billing-first-name">Vorname:</label>
-                                    <input type="text" id="billing-first-name" name="billing-first-name">
+                                    <input type="text"
+                                           id="billing-first-name"
+                                           name="billing-first-name">
                                 </div>
                                 <div class="form-col">
                                     <label for="billing-last-name">Nachname:</label>
-                                    <input type="text" id="billing-last-name" name="billing-last-name">
+                                    <input type="text"
+                                           id="billing-last-name"
+                                           name="billing-last-name">
                                 </div>
                             </div>
 
-                            <label for="billing-street">Straße:</label>
-                            <input type="text" id="billing-street" name="billing-street">
+                            <div>
+                                <label for="billing-street">Straße:</label>
+                                <input type="text"
+                                       id="billing-street"
+                                       name="billing-street">
+                            </div>
 
                             <div class="form-row-two">
                                 <div class="form-col">
                                     <label for="billing-house-number">Hausnummer:</label>
-                                    <input type="text" id="billing-house-number" name="billing-house-number">
+                                    <input type="text"
+                                           id="billing-house-number"
+                                           name="billing-house-number">
                                 </div>
                                 <div class="form-col">
                                     <label for="billing-address-line2">Adresszusatz:</label>
-                                    <input type="text" id="billing-address-line2" name="billing-address-line2">
+                                    <input type="text"
+                                           id="billing-address-line2"
+                                           name="billing-address-line2">
                                 </div>
                             </div>
 
                             <div class="form-row-two">
                                 <div class="form-col">
                                     <label for="billing-city">Stadt:</label>
-                                    <input type="text" id="billing-city" name="billing-city">
+                                    <input type="text"
+                                           id="billing-city"
+                                           name="billing-city">
                                 </div>
                                 <div class="form-col">
                                     <label for="billing-zip">Postleitzahl:</label>
-                                    <input type="text" id="billing-zip" name="billing-zip">
+                                    <input type="text"
+                                           id="billing-zip"
+                                           name="billing-zip">
                                 </div>
                             </div>
 
-                            <label for="billing-country">Land:</label>
-                            <input type="text" id="billing-country" name="billing-country">
+                            <div>
+                                <label for="billing-country">Land:</label>
+                                <input type="text"
+                                       id="billing-country"
+                                       name="billing-country">
+                            </div>
                         </div>
 
                         <!-- Versandoptionen -->
                         <h3 class="checkout-section-title">Versandoptionen</h3>
                         <div class="shipping-options">
                             <label class="shipping-option">
-                                <input type="radio" id="shipping-standard" name="shippingOption" value="standard"
-                                    required>
+                                <input type="radio"
+                                       id="shipping-standard"
+                                       name="shippingOption"
+                                       value="standard"
+                                       required>
                                 <span>Standardversand (3–5 Tage) – 5.00€</span>
                             </label>
 
                             <label class="shipping-option">
-                                <input type="radio" id="shipping-express" name="shippingOption" value="express">
+                                <input type="radio"
+                                       id="shipping-express"
+                                       name="shippingOption"
+                                       value="express">
                                 <span>Expressversand (1–2 Tage) – 15.00€</span>
                             </label>
 
                             <label class="shipping-option">
-                                <input type="radio" id="shipping-premium" name="shippingOption" value="premium">
+                                <input type="radio"
+                                       id="shipping-premium"
+                                       name="shippingOption"
+                                       value="premium">
                                 <span>Ich bin reich und hübsch (3–5 Tage) – 70.00€</span>
                             </label>
                         </div>
@@ -180,21 +273,31 @@
                         <h3 class="checkout-section-title">Zahlungsmethoden</h3>
                         <div class="payment-options">
                             <label class="payment-option">
-                                <input type="radio" id="payment-banktransfer" name="paymentMethod"
-                                    value="payment-prepaid-banktransfer">
+                                <input type="radio"
+                                       id="payment-banktransfer"
+                                       name="paymentMethod"
+                                       value="payment-prepaid-banktransfer">
                                 <span>Vorauskasse</span>
                             </label>
 
                             <label class="payment-option">
-                                <input type="radio" id="payment-paypal" name="paymentMethod" value="paypal" required>
+                                <input type="radio"
+                                       id="payment-paypal"
+                                       name="paymentMethod"
+                                       value="paypal"
+                                       required>
                                 <span>PayPal</span>
                             </label>
                         </div>
 
-                        <div id="paypal-button-container" style="display:none; margin-top: 10px;"></div>
+                        <div id="paypal-button-container"
+                             style="display:none; margin-top: 10px;"></div>
 
-                        <button type="submit" id="place-order-btn" class="primary-btn checkout-submit">kostenpflichtig
-                            bestellen</button>
+                        <button type="submit"
+                                id="place-order-btn"
+                                class="primary-btn checkout-submit">
+                            kostenpflichtig bestellen
+                        </button>
                     </form>
                 </section>
 
@@ -208,15 +311,15 @@
                         </div>
 
                         <div class="order-summary">
-                            <div class="order-summary-row">
+                            <div class="order-summary-row d-flex justify-content-between">
                                 <span>Zwischensumme</span>
                                 <span><span id="checkout-cart-total">0.00</span> €</span>
                             </div>
-                            <div class="order-summary-row">
+                            <div class="order-summary-row d-flex justify-content-between">
                                 <span>Versand</span>
                                 <span><span id="checkout-shipping-cost">0.00</span> €</span>
                             </div>
-                            <div class="order-summary-row total">
+                            <div class="order-summary-row total d-flex justify-content-between fw-semibold">
                                 <span>Gesamt</span>
                                 <span><span id="checkout-grand-total">0.00</span> €</span>
                             </div>
@@ -226,18 +329,23 @@
             </section>
         </main>
 
-        <footer class="ishop-footer">
-            <p>© 2025 iShop</p>
+        <footer class="ishop-footer mt-4 text-center text-muted small">
+            <p class="mb-0">© 2025 iShop</p>
         </footer>
     </div>
 
     <!-- PayPal SDK -->
     <script
         src="https://www.paypal.com/sdk/js?client-id=AXqvCkGlzJHE7ZCvPS6YPRQMvAVdBFH_01GnTrKZz9_rZiuy2xT7V25ai4xVBuMvBkhUV4rwJc1_xwar&currency=EUR&disable-funding=card,sepa">
-        </script>
+    </script>
     <script src="../checkout-validation.js"></script>
     <script src="../checkout-session-cart.js"></script>
     <script src="../checkout.js"></script>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
 </body>
 
 </html>

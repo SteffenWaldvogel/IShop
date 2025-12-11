@@ -295,6 +295,8 @@ Dann im Browser die angegebene URL (z. B. `http://127.0.0.1:8080`) öffnen.
 Die PostgreSQL‑Datenbank bildet das persistente Rückgrat von iShop.  
 Das ER‑Diagramm (`db-schema.png`) zeigt alle Tabellen und Beziehungen.
 
+![Datenbankschema](db-schema.png)
+
 Wichtige Tabellen:
 
 - `products`, `picturelinks` – Produkt- und Bilddaten  
